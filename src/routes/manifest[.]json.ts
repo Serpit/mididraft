@@ -20,18 +20,22 @@ export const Route = createFileRoute('/manifest.json')({
           scope: '/',
           display: 'standalone',
           // Keep in sync with <meta name="theme-color"> in src/routes/__root.tsx
-          background_color: '#09090b',
-          theme_color: '#09090b',
+          background_color: '#fdfcfc',
+          theme_color: '#fdfcfc',
           icons: [
-            { src: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
             {
-              src: '/android-chrome-192x192.png',
+              src: '/favicon.ico?v=mididraft-c',
+              sizes: '48x48',
+              type: 'image/x-icon',
+            },
+            {
+              src: '/android-chrome-192x192.png?v=mididraft-c',
               sizes: '192x192',
               type: 'image/png',
               purpose: 'maskable',
             },
             {
-              src: '/android-chrome-512x512.png',
+              src: '/android-chrome-512x512.png?v=mididraft-c',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'maskable',
