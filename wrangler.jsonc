@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mkfast-template",
+  "name": "mididraft",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": [
     // Enable Node.js API
@@ -24,10 +24,14 @@
   "main": "./src/server.ts",
 
   // Enables Workers Trace Events Logpush for a Worker
-  "logpush": true,
+  "logpush": false,
 
   // Whether Wrangler should keep variables configured in the dashboard on deploy
   "keep_vars": true,
+  "account_id": "c44f96d73d3a41fa80298e1fbca99dbb",
+  "vars": {
+    "VITE_BASE_URL": "https://mididraft.com"
+  },
 
   // Enables automatically ingest, store, filter, and analyze logging data emitted from Cloudflare Workers
   "observability": {
@@ -46,7 +50,7 @@
   // https://developers.cloudflare.com/workers/configuration/routing/custom-domains/
   "routes": [
     {
-      "pattern": "demo.tanstarter.dev",
+      "pattern": "mididraft.com",
       "custom_domain": true
     }
   ],
@@ -58,23 +62,14 @@
    * https://developers.cloudflare.com/workers/runtime-apis/bindings/
    */
   /**
-   * D1: create database with `npx wrangler d1 create mkfast-template`
+   * D1: create database with `npx wrangler d1 create mididraft`
    */
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "mkfast-template",
-      "database_id": "dc34f04a-3445-4b5c-bf61-c4ec2328e239",
+      "database_name": "mididraft",
+      "database_id": "0d2ba02d-3409-44bf-906c-9d6f2da5f720",
       "migrations_dir": "./src/db/migrations"
-    }
-  ],
-  /**
-   * R2: create bucket with `npx wrangler r2 bucket create mkfast-template`
-   */
-  "r2_buckets": [
-    {
-      "bucket_name": "mkfast-template",
-      "binding": "BUCKET"
     }
   ]
 

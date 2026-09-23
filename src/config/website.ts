@@ -82,7 +82,8 @@ export const websiteConfig: WebsiteConfig = {
     provider: 'discord',
   },
   storage: {
-    enable: true,
+    // Conversion is local; cloud file storage is not part of the launch.
+    enable: false,
     provider: 'r2',
     maxFileSize: DEFAULT_MAX_FILE_SIZE,
     allowedTypes: DEFAULT_ALLOWED_TYPES,
