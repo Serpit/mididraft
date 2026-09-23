@@ -193,3 +193,8 @@ committed.
   the repo's font policy treats as a deliberate decision rather than a default.
 - The single column means the piano roll is narrower than in design A at the
   same viewport, so dense transcriptions have less horizontal room.
+- On a phone, the converted state shows the file, the waveform and the A/B
+  transport above the fold; the note roll is one scroll below it. That is the
+  cost of a single column, and the waveform and the "drag the handles" hint
+  were already trimmed at `sm` to claw some of it back. Design A and B both
+  get the notes higher on a phone because they fold or stack differently.

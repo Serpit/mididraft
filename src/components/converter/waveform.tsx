@@ -127,7 +127,7 @@ export function Waveform({
       <div
         ref={containerRef}
         className={cn(
-          'relative h-24 w-full select-none overflow-hidden rounded-xl border border-hairline bg-surface-strong sm:h-28',
+          'relative h-20 w-full select-none overflow-hidden rounded-xl border border-hairline bg-surface-strong sm:h-28',
           onSeek && !disabled && 'cursor-pointer'
         )}
         onClick={(event) => {

@@ -471,7 +471,7 @@ export function Converter({ className }: { className?: string }) {
                   />
                   Original audio
                 </span>
-                <span className="st-readout text-xs text-muted-foreground">
+                <span className="st-readout hidden text-xs text-muted-foreground sm:inline">
                   drag the handles to pick a section
                 </span>
               </div>
@@ -558,7 +558,7 @@ export function Converter({ className }: { className?: string }) {
                   onSeek={(seconds) => playerRef.current?.seek(seconds)}
                 />
 
-                <p className="st-readout mt-3 text-sm text-muted-foreground">
+                <p className="st-readout mt-3 pb-2 text-sm text-muted-foreground lg:pb-0">
                   {stats.count} notes
                   {stats.lowestPitch !== null && (
                     <>
