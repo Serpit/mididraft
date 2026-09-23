@@ -41,6 +41,12 @@ export const Route = createRootRouteWithContext<{
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
+      // Waffo Pancake domain verification for mididraft.com (store KYB).
+      // Waffo only checks at verification time; harmless to keep.
+      {
+        name: 'waffo-verify',
+        content: '673f79ba1e00f46e0080647f29969ef8',
+      },
       {
         title: websiteConfig.metadata?.title,
       },
