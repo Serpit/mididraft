@@ -32,6 +32,10 @@ come from the boilerplate and need their own setup before they do anything.
 | Cleanup presets | Not built. `/midi-cleanup` is `noindex` and unlisted |
 | Paid checkout | Not wired up. Prices are published, buttons disabled |
 
+Scope, phases, pricing and the day-90 decision rules come from the 90-day plan,
+recorded in [`docs/plan.md`](docs/plan.md) (source: Feishu doc linked there).
+Product analytics and the GA4 setup are in [`docs/analytics.md`](docs/analytics.md).
+
 Feature gating lives in [`src/config/product.ts`](src/config/product.ts). Flipping
 a flag to `true` adds that page to the nav and sitemap and drops the `noindex`, so
 do not flip it before the feature works.
