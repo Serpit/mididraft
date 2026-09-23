@@ -1,0 +1,175 @@
+/* ── Scroll-reveal & entrance animations ── */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes crossfade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-crossfade-in {
+  animation: crossfade-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+/* Stagger delay utilities for choreographed entrances */
+.delay-0 {
+  animation-delay: 0ms;
+}
+.delay-1 {
+  animation-delay: 100ms;
+}
+.delay-2 {
+  animation-delay: 200ms;
+}
+.delay-3 {
+  animation-delay: 300ms;
+}
+.delay-4 {
+  animation-delay: 400ms;
+}
+.delay-5 {
+  animation-delay: 500ms;
+}
+
+/* Scroll-reveal: hidden until in view */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.reveal-visible {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Global interaction polish ── */
+
+/* Smooth focus-visible ring for all focusable elements */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* Smooth transitions for all links and buttons */
+a,
+button,
+[role="button"] {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-hidden {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* custom markdown styles start */
+
+/* Code block background in dark mode for better visibility */
+.dark .prose pre {
+  background: var(--muted);
+}
+.dark .prose pre code {
+  background: transparent;
+}
+
+/* Remove underline from heading links (from rehype-autolink-headings) */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a,
+.prose h5 a,
+.prose h6 a {
+  text-decoration: none;
+}
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover,
+.prose h4 a:hover,
+.prose h5 a:hover,
+.prose h6 a:hover {
+  text-decoration: none;
+}
+
+/* hide scrollbar for screenshot */
+/* html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+} */
+
+/* ── Scrollbar styling ── */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: gray transparent;
+}
+
+/* custom markdown styles end */
+
+/* ── Piano roll palette ──
+   Canvas cannot read Tailwind utilities, so the roll's colours live here as
+   plain custom properties and are read back with getComputedStyle. */
+.piano-roll {
+  --pr-note: oklch(0.62 0.19 38.4);
+  --pr-ghost: oklch(0.72 0.02 260);
+  --pr-grid: oklch(0.91 0.004 260);
+  --pr-lane: oklch(0.96 0.003 260);
+  --pr-head: oklch(0.58 0.22 27);
+  --pr-loop: oklch(0.62 0.19 38.4);
+}
+
+.dark .piano-roll {
+  --pr-note: oklch(0.72 0.17 45);
+  --pr-ghost: oklch(0.45 0.015 260);
+  --pr-grid: oklch(0.3 0.006 260);
+  --pr-lane: oklch(0.23 0.004 260);
+  --pr-head: oklch(0.7 0.19 22);
+  --pr-loop: oklch(0.72 0.17 45);
+}
