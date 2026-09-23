@@ -431,6 +431,8 @@ export const messages = {
         upgradePlan: 'Upgrade plan',
         freePlanMessage: 'Upgrade to a paid plan to unlock more features',
         lifetimeMessage: 'You have lifetime access to all features',
+        passActiveUntil: 'Active until',
+        passMessage: 'One payment, does not renew.',
         periodStart: 'Current period starts:',
         periodEnds: 'Current period ends:',
         cancelsAtPeriodEnd: '(cancels at period end)',
@@ -550,7 +552,7 @@ export const messages = {
         ],
         limits: ['Batch processing', 'Saved cleanup presets', 'ZIP export'],
       },
-      pro: {
+      pass: {
         name: 'Project Pass',
         description:
           'For clearing one project off your desk. One-time, does not renew.',
@@ -564,7 +566,7 @@ export const messages = {
         ],
         limits: ['Saved presets across projects'],
       },
-      lifetime: {
+      pro: {
         name: 'Pro',
         description: 'For producers converting material every week.',
         features: [

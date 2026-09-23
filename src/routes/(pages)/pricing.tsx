@@ -1,4 +1,6 @@
+import { authClient } from '@/auth/client';
 import { FaqSection } from '@/components/home/faq';
+import { CheckoutButton } from '@/components/pricing/create-checkout-button';
 import Container from '@/components/layout/container';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
@@ -13,6 +15,9 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 
 const m = messages.pricing;
 const { pricing, features } = productConfig;
+
+/** Checkout needs both the feature flag and a configured payment provider. */
+const onSale = features.paidPlans && !!websiteConfig.payment?.enable;
 
 export const Route = createFileRoute('/(pages)/pricing')({
   head: () =>
@@ -48,24 +53,24 @@ const PLANS: Plan[] = [
   },
   {
     id: 'pass',
-    name: m.plans.pro.name,
+    name: m.plans.pass.name,
     price: `$${pricing.projectPass.amountUsd}`,
     cadence: `one-time, ${pricing.projectPass.days} days`,
-    description: m.plans.pro.description,
-    features: m.plans.pro.features,
-    limits: m.plans.pro.limits,
-    available: features.paidPlans,
+    description: m.plans.pass.description,
+    features: m.plans.pass.features,
+    limits: m.plans.pass.limits,
+    available: onSale,
     popular: true,
   },
   {
     id: 'pro',
-    name: m.plans.lifetime.name,
+    name: m.plans.pro.name,
     price: `$${pricing.pro.amountUsd}`,
     cadence: `per ${pricing.pro.interval}`,
-    description: m.plans.lifetime.description,
-    features: m.plans.lifetime.features,
-    limits: m.plans.lifetime.limits,
-    available: features.paidPlans,
+    description: m.plans.pro.description,
+    features: m.plans.pro.features,
+    limits: m.plans.pro.limits,
+    available: onSale,
   },
 ];
 
@@ -129,6 +134,8 @@ function PricingPage() {
                 >
                   Convert a file now
                 </Link>
+              ) : plan.available ? (
+                <PaidPlanAction planId={plan.id} />
               ) : (
                 <button
                   type="button"
@@ -180,16 +187,54 @@ function PricingPage() {
         <div>
           <h2 className="font-semibold">Refunds and cancellation</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            When the paid plans do open: the Project Pass is a single payment
-            that does not renew, the Pro plan can be cancelled from your account
-            page at any time, and a refund can be requested within 7 days of a
+            Orders are sold by Waffo Pancake, our merchant of record, which
+            handles payment, tax and receipts. The Project Pass is a single
+            payment that does not renew. Pro can be cancelled at any time from
+            Settings → Billing. A refund can be requested within 7 days of a
             first purchase. Prices are in US dollars; any tax is shown at
-            checkout before you pay.
+            checkout before you pay. Full details are in the{' '}
+            <Link to={Routes.TermsOfService} className="underline">
+              terms
+            </Link>
+            .
           </p>
         </div>
       </div>
 
       <FaqSection />
     </Container>
+  );
+}
+
+/**
+ * Buying needs an account, because that is where the pass or subscription is
+ * attached. Signed-out visitors go to login and come back here.
+ */
+function PaidPlanAction({ planId }: { planId: string }) {
+  const { data: session, isPending } = authClient.useSession();
+  const priceId =
+    websiteConfig.payment?.price?.plans[planId]?.prices[0]?.priceId ?? '';
+
+  if (isPending) {
+    return (
+      <button type="button" disabled className={cn(buttonVariants(), 'w-full')}>
+        Get started
+      </button>
+    );
+  }
+  if (!session?.user) {
+    return (
+      <a
+        href={`${Routes.Login}?callbackUrl=${encodeURIComponent(Routes.Pricing)}`}
+        className={cn(buttonVariants(), 'w-full')}
+      >
+        Sign in to buy
+      </a>
+    );
+  }
+  return (
+    <CheckoutButton planId={planId} priceId={priceId} className="w-full">
+      Get started
+    </CheckoutButton>
   );
 }

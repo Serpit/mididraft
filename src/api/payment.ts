@@ -2,6 +2,7 @@ import { getDb } from '@/db';
 import { payment } from '@/db/app.schema';
 import { user } from '@/db/auth.schema';
 import { findPlanByPriceId, getAllPricePlans } from '@/lib/price-plan';
+import { getBaseUrl } from '@/lib/urls';
 import { authApiMiddleware } from '@/middlewares/auth-middleware';
 import { createCheckout, createCustomerPortal } from '@/payment';
 import type {
@@ -13,7 +14,7 @@ import type {
 import { PaymentScenes, PaymentTypes } from '@/payment/types';
 import { websiteConfig } from '@/config/website';
 import { createServerFn } from '@tanstack/react-start';
-import { and, desc, eq, or } from 'drizzle-orm';
+import { and, desc, eq, gt, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({
@@ -37,15 +38,15 @@ export const createCheckoutSession = createServerFn({ method: 'POST' })
       .limit(1);
     if (!userRow?.email) throw new Error('User email not found');
     const { planId, priceId, successUrl, cancelUrl, metadata } = data;
-    const baseUrl = process.env.VITE_BASE_URL ?? '';
-    const isCreem = websiteConfig.payment?.provider === 'creem';
+    const baseUrl = getBaseUrl();
+    const isStripe = websiteConfig.payment?.provider === 'stripe';
     const cancel = cancelUrl ?? `${baseUrl}/settings/billing`;
 
     // For Stripe: {CHECKOUT_SESSION_ID} is replaced by Stripe on redirect,
     // then the Payment page polls by sessionId until the webhook writes the DB record.
-    // For Creem: Creem does NOT replace URL placeholders and has its own
-    // payment confirmation page, so redirect straight to billing.
-    const success = isCreem
+    // Creem and Waffo do NOT replace URL placeholders and show their own
+    // confirmation page, so redirect straight to billing.
+    const success = !isStripe
       ? (successUrl ?? `${baseUrl}/settings/billing`)
       : (successUrl ??
         `${baseUrl}/settings/payment?session_id={CHECKOUT_SESSION_ID}&callback=/settings/billing`);
@@ -85,7 +86,7 @@ export const createCustomerPortalSession = createServerFn({ method: 'POST' })
     if (!row?.customerId) {
       throw new Error('No customer found for user');
     }
-    const baseUrl = process.env.VITE_BASE_URL ?? '';
+    const baseUrl = getBaseUrl();
     const returnUrl = data.returnUrl ?? `${baseUrl}/settings/billing`;
     const result = await createCustomerPortal({
       customerId: row.customerId,
@@ -132,6 +133,12 @@ export const getCurrentPlan = createServerFn({ method: 'GET' })
               eq(payment.status, 'completed')
             ),
             and(
+              eq(payment.type, PaymentTypes.ONE_TIME),
+              eq(payment.scene, PaymentScenes.PASS),
+              eq(payment.status, 'completed'),
+              gt(payment.periodEnd, new Date())
+            ),
+            and(
               eq(payment.type, PaymentTypes.SUBSCRIPTION),
               or(eq(payment.status, 'active'), eq(payment.status, 'trialing'))
             )
@@ -142,6 +149,8 @@ export const getCurrentPlan = createServerFn({ method: 'GET' })
 
     let userLifetimePlan: PricePlan | null = null;
     let activeSubscription: Subscription | null = null;
+    let passPlan: PricePlan | null = null;
+    let passExpiresAt: Date | null = null;
 
     for (const rec of payments) {
       if (
@@ -154,6 +163,13 @@ export const getCurrentPlan = createServerFn({ method: 'GET' })
         if (plan && lifetimePlanIds.includes(plan.id)) {
           userLifetimePlan = plan as PricePlan;
         }
+      }
+      // Stacked passes: access runs to the latest end date.
+      if (rec.scene === PaymentScenes.PASS && rec.periodEnd) {
+        if (!passExpiresAt || rec.periodEnd > passExpiresAt) {
+          passExpiresAt = rec.periodEnd;
+        }
+        passPlan ??= (findPlanByPriceId(rec.priceId) as PricePlan) ?? null;
       }
       if (
         !userLifetimePlan &&
@@ -178,8 +194,11 @@ export const getCurrentPlan = createServerFn({ method: 'GET' })
       }
     }
 
+    // An ongoing plan outranks a pass; the pass end date is still reported so
+    // the billing page can show it.
+    const pass = passExpiresAt ? { expiresAt: passExpiresAt } : null;
     if (userLifetimePlan) {
-      return { currentPlan: userLifetimePlan, subscription: null };
+      return { currentPlan: userLifetimePlan, subscription: null, pass };
     }
     if (activeSubscription) {
       const subscriptionPlan =
@@ -189,9 +208,17 @@ export const getCurrentPlan = createServerFn({ method: 'GET' })
       return {
         currentPlan: subscriptionPlan as PricePlan | null,
         subscription: activeSubscription,
+        pass,
       };
     }
-    return { currentPlan: freePlan as PricePlan | null, subscription: null };
+    if (passPlan) {
+      return { currentPlan: passPlan, subscription: null, pass };
+    }
+    return {
+      currentPlan: freePlan as PricePlan | null,
+      subscription: null,
+      pass: null,
+    };
   });
 
 const checkCompletionSchema = z.object({ sessionId: z.string().min(1) });

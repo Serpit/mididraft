@@ -1,4 +1,53 @@
-# Payment (Stripe / Creem)
+# Payment (Waffo / Stripe / Creem)
+
+## MidiDraft uses Waffo Pancake
+
+Waffo Pancake is a merchant of record (taxes, invoices, chargebacks handled).
+Set `VITE_PAYMENT_PROVIDER='waffo'`. Nothing is on sale until
+`productConfig.features.paidPlans` is also true — the pricing page checks both.
+
+| Piece | Where |
+|-------|-------|
+| Catalog (store + products) | `pnpm waffo:setup` → IDs in `productConfig.waffo` (`src/config/product.ts`) |
+| Prices | `productConfig.pricing`; change them there and re-run `pnpm waffo:setup` |
+| Provider | `src/payment/provider/waffo.ts` (official `@waffo/pancake-ts` SDK) |
+| Webhook | `POST /api/webhooks/waffo` (`src/routes/api/webhooks/waffo.ts`) |
+| Customer portal | `https://pancake.waffo.ai/consumer/portal/login` (email magic link; no API for a signed link yet) |
+
+**Plans.** `pass` = Project Pass, a one-time product; the webhook writes a
+`payment` row with scene `pass` and `periodEnd` = paid time + 7 days (a pass
+bought while one is active starts where it ends). `pro` = monthly subscription,
+one row keyed by the Waffo order ID and updated by `subscription.*` events.
+A `refund.succeeded` revokes the order's row. `getCurrentPlan` returns the
+active plan plus `pass.expiresAt`.
+
+**Environments.** Waffo keys are per environment: a test key only sees test
+mode. `WAFFO_MODE` (`test` | `prod`, default `test`) is the mode whose webhooks
+this deployment honours; events from the other mode, or from another store on
+the same merchant, are ignored. Products live in test until
+`pnpm waffo:setup <env-file> --publish`, which needs the store's KYB approval.
+
+**Env / secrets.** `WAFFO_MERCHANT_ID`, `WAFFO_PRIVATE_KEY` (Dashboard → API 与开发;
+separate keys for test and prod), `WAFFO_MODE`.
+
+**Webhook registration.** `pnpm waffo:setup` registers it for the env file's
+`WAFFO_MODE` (test is registered; prod gets its own run with the prod key).
+One per environment on the MidiDraft store, URL
+`https://mididraft.com/api/webhooks/waffo`, events: `order.completed`,
+`subscription.activated`, `subscription.renewed`, `subscription.recovered`,
+`subscription.plan_changed`, `subscription.canceling`, `subscription.uncanceled`,
+`subscription.canceled`, `subscription.past_due`, `refund.succeeded`. Bad
+signature → 401; processing error → 500 so Waffo retries (handlers are
+idempotent). Local testing needs a tunnel that keeps custom headers
+(cloudflared or ngrok, not localtunnel).
+
+**Gotchas found while integrating (SDK 0.25).** The documented GraphQL
+`onetimeProducts(filter: { storeId })` is rejected by the API — query
+`store(id) { onetimeProducts { … } }` instead. `prices` comes back as
+`[{ currency, priceInfo { amount } }]`. GraphQL failures arrive in `errors`,
+not as exceptions.
+
+## Provider pattern
 
 Subscription and one-time payment support via a **provider pattern** — switch between Stripe and Creem by setting the `VITE_PAYMENT_PROVIDER` env var (`'stripe'` or `'creem'`). Set it to `''` (empty, the default) to disable payment entirely. Both providers implement the same `PaymentProvider` interface, so all downstream code (checkout, billing, webhooks) is provider-agnostic. See [Env](./env.md) for all variables.
 

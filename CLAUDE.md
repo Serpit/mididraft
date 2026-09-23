@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **MidiDraft** — an audio-to-MIDI converter site for music producers. Built on the
 TanStarter (mkfast-template) boilerplate: TanStack Start + React 19 on Cloudflare
-Workers, with auth (Better Auth), payments (Stripe / Creem), email, R2 storage, D1
+Workers, with auth (Better Auth), payments (Waffo; Stripe / Creem also wired), email, R2 storage, D1
 via Drizzle, blog (Content Collections) and an admin dashboard inherited from it.
 
 ### What this product is
@@ -15,7 +15,8 @@ Convert MP3/WAV to an editable MIDI draft, compare it against the original by ea
 clean it up, and download a standard `.mid`. **The conversion runs entirely in the
 browser** — audio is never uploaded. The free tier is the complete job, not a trial.
 
-Scope decisions live in `src/config/product.ts`, taken from the 90-day plan:
+Scope decisions live in `src/config/product.ts`, taken from the 90-day plan
+(recorded in `docs/plan.md`; read it before changing scope, pricing or phases):
 
 - The **homepage is the tool**. Do not add a `/audio-to-midi` page to compete with it.
 - Instrument keywords (`voice to midi`, `guitar to midi`) are homepage sections, not
@@ -103,7 +104,7 @@ Incoming request → Cloudflare Worker (`src/server.ts`) → TanStack Start hand
 | `src/api/` | Server functions (payment, users, contact, newsletter, files) |
 | `src/auth/` | Better Auth config (`auth.ts` server, `client.ts` client) |
 | `src/db/` | Drizzle schemas (`auth.schema.ts` auto-generated, `app.schema.ts` app tables), migrations, types |
-| `src/payment/` | Stripe / Creem integration (checkout, portal, webhooks) |
+| `src/payment/` | Waffo (used), Stripe, Creem providers — checkout, portal, webhooks; see `docs/payment.md` |
 | `src/mail/` | Resend / Cloudflare Email — provider, templates (React components), rendering |
 | `src/storage/` | Cloudflare R2 file storage |
 | `src/newsletter/` | Resend and Beehiiv newsletter via API |

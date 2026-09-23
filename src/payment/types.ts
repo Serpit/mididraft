@@ -11,13 +11,15 @@ export const PaymentTypes = {
 };
 
 /**
- * Payment scene: subscription and lifetime
+ * Payment scene: subscription, lifetime, or a pass — a one-time payment that
+ * grants access until `periodEnd` and does not renew.
  */
-export type PaymentScene = 'subscription' | 'lifetime';
+export type PaymentScene = 'subscription' | 'lifetime' | 'pass';
 
 export const PaymentScenes = {
   LIFETIME: 'lifetime' as const,
   SUBSCRIPTION: 'subscription' as const,
+  PASS: 'pass' as const,
 };
 
 export type PlanInterval = 'month' | 'year';

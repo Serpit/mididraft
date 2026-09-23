@@ -1,3 +1,4 @@
+import { productConfig } from '@/config/product';
 import { clientEnv } from '@/env/client';
 import { messages } from '@/messages';
 import type { WebsiteConfig } from '../types';
@@ -7,25 +8,36 @@ import {
   DEFAULT_USER_FILES_FOLDER,
 } from '@/storage/constants';
 
-// Payment provider controlled by env var: 'stripe' | 'creem' | '' (empty means disabled)
+// Payment provider controlled by env var: 'stripe' | 'creem' | 'waffo' | ''
+// (empty means disabled). Waffo is the provider MidiDraft uses.
 const paymentProvider = clientEnv.VITE_PAYMENT_PROVIDER;
 const isPaymentEnabled = paymentProvider !== '';
-const isCreemPayment = paymentProvider === 'creem';
 
-// Resolve price/product IDs based on the active payment provider
-const priceIds = isPaymentEnabled
-  ? {
-      proMonthly: isCreemPayment
-        ? (clientEnv.VITE_CREEM_PRODUCT_PRO_MONTHLY ?? '')
-        : (clientEnv.VITE_STRIPE_PRICE_PRO_MONTHLY ?? ''),
-      proYearly: isCreemPayment
-        ? (clientEnv.VITE_CREEM_PRODUCT_PRO_YEARLY ?? '')
-        : (clientEnv.VITE_STRIPE_PRICE_PRO_YEARLY ?? ''),
-      lifetime: isCreemPayment
-        ? (clientEnv.VITE_CREEM_PRODUCT_LIFETIME ?? '')
-        : (clientEnv.VITE_STRIPE_PRICE_LIFETIME ?? ''),
-    }
-  : { proMonthly: '', proYearly: '', lifetime: '' };
+// Resolve price/product IDs based on the active payment provider. Waffo's IDs
+// are catalog constants written by `pnpm waffo:setup`, not env vars.
+function resolvePriceIds(): { pass: string; proMonthly: string } {
+  switch (paymentProvider) {
+    case 'waffo':
+      return {
+        pass: productConfig.waffo.products.projectPass,
+        proMonthly: productConfig.waffo.products.proMonthly,
+      };
+    case 'creem':
+      return {
+        pass: clientEnv.VITE_CREEM_PRODUCT_LIFETIME ?? '',
+        proMonthly: clientEnv.VITE_CREEM_PRODUCT_PRO_MONTHLY ?? '',
+      };
+    case 'stripe':
+      return {
+        pass: clientEnv.VITE_STRIPE_PRICE_LIFETIME ?? '',
+        proMonthly: clientEnv.VITE_STRIPE_PRICE_PRO_MONTHLY ?? '',
+      };
+    default:
+      return { pass: '', proMonthly: '' };
+  }
+}
+const priceIds = resolvePriceIds();
+const { pricing } = productConfig;
 
 /**
  * Website config
@@ -69,12 +81,15 @@ export const websiteConfig: WebsiteConfig = {
     enable: true,
     provider: 'cloudflare',
     fromEmail: 'MidiDraft <hello@mididraft.com>',
-    supportEmail: 'MidiDraft <hello@mididraft.com>',
+    // Shown on the site and used as the Waffo store's support email; the two
+    // must match for Waffo's review. Sending stays on the own domain above.
+    supportEmail: 'MidiDraft <mididraft@outlook.com>',
   },
   newsletter: {
     enable: true,
     provider: 'resend',
-    autoSubscribeAfterSignUp: true,
+    // Product news needs consent: users opt in from settings, never at sign-up.
+    autoSubscribeAfterSignUp: false,
   },
   notification: {
     enable: true,
@@ -103,45 +118,44 @@ export const websiteConfig: WebsiteConfig = {
           features: [...messages.pricing.plans.free.features],
           limits: [...messages.pricing.plans.free.limits],
         },
-        // "Project Pass" — a one-time 7-day pass, priced from the plan.
-        pro: {
-          id: 'pro',
+        // Project Pass: one payment, access for `pricing.projectPass.days`.
+        pass: {
+          id: 'pass',
           prices: [
             {
               type: 'one_time',
-              priceId: priceIds.lifetime,
-              amount: 700,
+              priceId: priceIds.pass,
+              amount: pricing.projectPass.amountUsd * 100,
               currency: 'USD',
-              allowPromotionCode: true,
             },
           ],
           isFree: false,
           isLifetime: false,
           popular: true,
-          name: messages.pricing.plans.pro.name,
-          description: messages.pricing.plans.pro.description,
-          features: [...messages.pricing.plans.pro.features],
-          limits: [...messages.pricing.plans.pro.limits],
+          name: messages.pricing.plans.pass.name,
+          description: messages.pricing.plans.pass.description,
+          features: [...messages.pricing.plans.pass.features],
+          limits: [...messages.pricing.plans.pass.limits],
         },
-        // "Pro" — the recurring plan. Yearly only goes live once monthly
+        // Pro: monthly subscription. Yearly only goes live once monthly
         // retention is proven, so it is not offered yet.
-        lifetime: {
-          id: 'lifetime',
+        pro: {
+          id: 'pro',
           prices: [
             {
               type: 'subscription',
               priceId: priceIds.proMonthly,
-              amount: 1200,
+              amount: pricing.pro.amountUsd * 100,
               currency: 'USD',
               interval: 'month',
             },
           ],
           isFree: false,
           isLifetime: false,
-          name: messages.pricing.plans.lifetime.name,
-          description: messages.pricing.plans.lifetime.description,
-          features: [...messages.pricing.plans.lifetime.features],
-          limits: [...messages.pricing.plans.lifetime.limits],
+          name: messages.pricing.plans.pro.name,
+          description: messages.pricing.plans.pro.description,
+          features: [...messages.pricing.plans.pro.features],
+          limits: [...messages.pricing.plans.pro.limits],
         },
       },
     },

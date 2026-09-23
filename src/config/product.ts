@@ -45,6 +45,20 @@ export const productConfig = {
     pro: { amountUsd: 12, interval: 'month' as const },
     proYearly: { amountUsd: 89, interval: 'year' as const },
   },
+
+  /**
+   * Waffo Pancake catalog, created by `pnpm waffo:setup` from the prices
+   * above. IDs are the same in test and production (`--publish` promotes a
+   * product, it does not copy it). Pro yearly is not created until monthly
+   * retention is proven.
+   */
+  waffo: {
+    storeId: 'STO_4DcF8oeIBxozuUSZnXJzKc',
+    products: {
+      projectPass: 'PROD_4mjEIED8OR0scVKVPp3UhU',
+      proMonthly: 'PROD_0iN8Czds7gZazcWmR3n4hc',
+    },
+  },
 } as const;
 
 export type ProductFeature = keyof typeof productConfig.features;

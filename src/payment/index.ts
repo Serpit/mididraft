@@ -1,6 +1,7 @@
 import { websiteConfig } from '@/config/website';
 import { CreemProvider } from './provider/creem';
 import { StripeProvider } from './provider/stripe';
+import { WaffoProvider } from './provider/waffo';
 import type {
   CheckoutResult,
   CreateCheckoutParams,
@@ -17,6 +18,7 @@ type ProviderFactory = () => PaymentProvider;
 const providerRegistry: Record<PaymentProviderName, ProviderFactory> = {
   stripe: () => new StripeProvider(),
   creem: () => new CreemProvider(),
+  waffo: () => new WaffoProvider(),
 };
 
 function createProvider(): PaymentProvider {

@@ -57,6 +57,11 @@ export function BillingCard() {
     ? (plans.find((p) => p.id === currentPlan.id) ?? currentPlan)
     : null;
   const isFreePlan = currentPlanWithName?.isFree ?? false;
+  // A Project Pass: one payment, access until `pass.expiresAt`, no renewal.
+  const pass = paymentData?.pass ?? null;
+  const isPassPlan =
+    !!pass && !subscription && !isLifetimeMember && !isFreePlan;
+  const passExpiresAt = pass ? formatDate(pass.expiresAt) : null;
 
   const currentPeriodStart = subscription?.currentPeriodStart
     ? formatDate(subscription.currentPeriodStart)
@@ -158,6 +163,17 @@ export function BillingCard() {
           <div className="text-3xl font-medium">
             {currentPlanWithName?.name ?? currentPlan?.id ?? m.free}
           </div>
+          {isPassPlan && (
+            <Badge
+              variant="outline"
+              className="text-xs border-transparent bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+            >
+              <span className="flex items-center space-x-2">
+                <IconCircleCheck className="size-3 mr-1" />
+                {m.statusActive}
+              </span>
+            </Badge>
+          )}
           {subscription &&
             (subscription.status === 'trialing' ||
               subscription.status === 'active') && (
@@ -196,6 +212,16 @@ export function BillingCard() {
         {isLifetimeMember && (
           <div className="text-sm text-muted-foreground">
             {m.lifetimeMessage}
+          </div>
+        )}
+
+        {/* Pass: end date, and that it will not renew */}
+        {isPassPlan && passExpiresAt && (
+          <div className="text-sm text-muted-foreground space-y-2">
+            <div>
+              {m.passActiveUntil} {passExpiresAt}
+            </div>
+            <div>{m.passMessage}</div>
           </div>
         )}
 
@@ -239,8 +265,15 @@ export function BillingCard() {
           </CustomerPortalButton>
         )}
 
+        {/* Pass: invoices and receipts live in the billing portal */}
+        {isPassPlan && currentUser && (
+          <CustomerPortalButton returnUrl={undefined}>
+            {m.manageBilling}
+          </CustomerPortalButton>
+        )}
+
         {/* Subscription: show manage subscription (only when not free and not lifetime) */}
-        {!isFreePlan && !isLifetimeMember && currentUser && (
+        {!isFreePlan && !isLifetimeMember && !isPassPlan && currentUser && (
           <CustomerPortalButton returnUrl={undefined}>
             {m.manageSubscription}
           </CustomerPortalButton>

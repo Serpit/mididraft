@@ -40,6 +40,12 @@ export const serverEnv = createEnv({
 
     // AI image generation (fal.ai)
     FAL_KEY: z.string().optional(),
+
+    // Payment (Waffo Pancake). WAFFO_MODE is which environment's webhooks this
+    // deployment honours: a test-mode purchase must never unlock production.
+    WAFFO_MERCHANT_ID: z.string().optional(),
+    WAFFO_PRIVATE_KEY: z.string().optional(),
+    WAFFO_MODE: z.enum(['test', 'prod']).default('test'),
   },
   runtimeEnv: process.env,
 });

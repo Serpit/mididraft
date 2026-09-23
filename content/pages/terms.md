@@ -1,10 +1,10 @@
 ---
 title: Terms of Service
 description: The terms that apply when you use MidiDraft
-date: 2026-09-22
+date: 2026-09-23
 ---
 
-**Last updated: 22 September 2026**
+**Last updated: 23 September 2026**
 
 These terms apply when you use MidiDraft. By using the site you agree to them.
 
@@ -47,18 +47,35 @@ suspend accounts used to abuse the service or to break these terms.
 
 ## Paid plans
 
-Paid plans are not currently on sale. When they open:
+The converter is free. Paid plans are listed with their prices on the
+[pricing page](/pricing); a plan shown there as not available cannot be bought.
 
-- The **Project Pass** is a single payment covering a fixed period. It does not
-  renew automatically.
-- **Pro** is a subscription that renews until you cancel. You can cancel at any
-  time from your account page; cancellation stops future renewals and leaves
-  your current period running to its end.
-- Prices are in US dollars. Applicable tax is shown at checkout before payment.
-- You may request a refund within 7 days of a first purchase. Where local
-  consumer law gives you stronger rights, those rights apply.
-- If a paid feature is unavailable because of a fault on our side, tell us and
-  we will refund or extend, at your choice.
+**Who sells them.** Orders are sold and fulfilled by **Waffo Pancake**, our
+authorised reseller and merchant of record. Waffo processes your payment,
+calculates and collects any sales tax or VAT, issues your receipt or invoice,
+and appears as the merchant on your card statement. Its checkout and its own
+terms apply to the purchase. We provide the service you bought.
+
+**Project Pass** is a single payment that gives you the paid features for 7
+days from the moment the payment succeeds. It does not renew. If you buy
+another pass while one is active, the new one starts when the current one
+ends.
+
+**Pro** is a monthly subscription that renews automatically until you cancel.
+You can cancel at any time from Settings → Billing, which opens Waffo's
+customer portal; cancelling stops future renewals and your current period runs
+to its end. If a renewal payment fails, the paid features pause until the
+payment succeeds or the subscription ends.
+
+**Prices and tax.** Prices are in US dollars. Any sales tax or VAT is
+calculated by Waffo and shown at checkout before you pay.
+
+**Refunds.** You may request a refund within 7 days of a first purchase by
+emailing [mididraft@outlook.com](mailto:mididraft@outlook.com); refunds are
+paid back by Waffo to the original payment method. A refunded purchase ends
+the access it paid for. If a paid feature is unavailable because of a fault on
+our side, tell us and we will refund or extend, at your choice. Where local
+consumer law gives you stronger rights, those rights apply.
 
 ## Acceptable use
 
@@ -87,6 +104,13 @@ We may update these terms. Material changes will be noted on the site with a
 new date at the top. Continuing to use the service after a change means you
 accept the updated terms.
 
+## Privacy
+
+How we handle personal data, and how Waffo handles payment data, is described
+in the [Privacy Policy](/privacy).
+
 ## Contact
 
-Questions about these terms: use the [contact page](/contact).
+Questions about these terms:
+[mididraft@outlook.com](mailto:mididraft@outlook.com), or use the
+[contact page](/contact).
