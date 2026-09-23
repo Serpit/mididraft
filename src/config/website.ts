@@ -49,9 +49,8 @@ export const websiteConfig: WebsiteConfig = {
       logoDark: '/logo-dark.svg',
     },
   },
-  social: {
-    twitter: 'https://x.com/mididraft',
-  },
+  // No social accounts are live yet; add them here once they exist.
+  social: {},
   auth: {
     enable: true,
     enableGoogleLogin: true,

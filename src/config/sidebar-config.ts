@@ -3,7 +3,6 @@ import {
   IconCreditCard,
   IconFileUpload,
   IconKey,
-  IconLayoutDashboard,
   IconLock,
   IconSettings2,
   IconShieldCheck,
@@ -23,12 +22,6 @@ const am = messages.admin;
  */
 export function getSidebarLinks(): MenuItemConfig[] {
   return [
-    {
-      title: m.dashboard,
-      icon: IconLayoutDashboard,
-      href: Routes.Dashboard,
-      external: false,
-    },
     {
       title: am.title,
       icon: IconShieldCheck,

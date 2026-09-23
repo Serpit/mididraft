@@ -1,8 +1,4 @@
-import {
-  IconCreditCard,
-  IconLayoutDashboard,
-  IconSettings2,
-} from '@tabler/icons-react';
+import { IconCreditCard, IconSettings2 } from '@tabler/icons-react';
 import { Routes } from '@/lib/routes';
 import type { MenuItemConfig } from '../types';
 import { messages } from '@/messages';
@@ -15,7 +11,6 @@ const m = messages.dashboard.avatar;
  */
 export function getAvatarLinks(): MenuItemConfig[] {
   return [
-    { title: m.dashboard, href: Routes.Dashboard, icon: IconLayoutDashboard },
     ...(websiteConfig.payment?.enable
       ? [
           {

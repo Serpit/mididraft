@@ -40,7 +40,7 @@ export const adminRouteMiddleware = createMiddleware().server(
 
     const role = session.user.role;
     if (role !== ADMIN_ROLE) {
-      throw redirect({ to: Routes.Dashboard });
+      throw redirect({ to: Routes.Root });
     }
 
     return await next();

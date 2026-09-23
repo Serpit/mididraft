@@ -66,5 +66,5 @@ export const Routes = {
   AdminUsers: '/admin/users',
 } as const;
 
-/** Default login redirect route */
-export const DEFAULT_LOGIN_REDIRECT = Routes.Dashboard;
+/** Default login redirect route: back to the tool, not a dashboard */
+export const DEFAULT_LOGIN_REDIRECT = Routes.Root;
