@@ -27,6 +27,13 @@ import {
 } from '@/lib/midi/types';
 import type { CleanupOptions, Note, TranscribeOptions } from '@/lib/midi/types';
 import { EXAMPLES } from '@/lib/midi/examples';
+import { fileExtension, lengthBucket, track } from '@/lib/analytics/events';
+import type {
+  AnalyzeErrorReason,
+  InputSource,
+  RejectReason,
+  SettingGroup,
+} from '@/lib/analytics/events';
 import { Routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import {
@@ -50,6 +57,32 @@ interface LoadedAudio {
   name: string;
   buffer: AudioBuffer;
   peaks: number[];
+}
+
+/** Where a file came from, for analytics only. */
+interface FileOrigin {
+  source: InputSource;
+  exampleSlug?: string;
+}
+
+const ANALYZE_ERROR_REASONS: AnalyzeErrorReason[] = [
+  'segment_too_short',
+  'model_load_failed',
+  'inference_failed',
+  'out_of_memory',
+];
+
+function rejectReason(caught: unknown): RejectReason {
+  if (caught instanceof AudioError) {
+    if (caught.code === 'unsupported_format') return 'unsupported_format';
+    if (caught.code === 'too_large') return 'too_large';
+  }
+  return 'decode_failed';
+}
+
+function analyzeErrorReason(caught: unknown): AnalyzeErrorReason {
+  const code = caught instanceof AudioError ? caught.code : undefined;
+  return ANALYZE_ERROR_REASONS.find((reason) => reason === code) ?? 'unknown';
 }
 
 export function Converter({ className }: { className?: string }) {
@@ -88,6 +121,21 @@ export function Converter({ className }: { className?: string }) {
   const abortRef = useRef<AbortController | null>(null);
   const rafRef = useRef<number | null>(null);
 
+  // Analytics bookkeeping. Refs, not state: none of it affects rendering.
+  const originRef = useRef<FileOrigin>({ source: 'upload' });
+  const filesLoadedRef = useRef(0);
+  const runsRef = useRef(0);
+  const segmentSecondsRef = useRef(0);
+  const playedRef = useRef(new Set<PreviewSource>());
+  const comparedRef = useRef(false);
+  const adjustedRef = useRef(new Set<SettingGroup>());
+
+  const trackAdjusted = useCallback((group: SettingGroup) => {
+    if (adjustedRef.current.has(group)) return;
+    adjustedRef.current.add(group);
+    track('settings_adjusted', { setting_group: group });
+  }, []);
+
   // One player for the life of the component.
   useEffect(() => {
     const player = new PreviewPlayer();
@@ -122,6 +170,19 @@ export function Converter({ className }: { className?: string }) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [playerState.playing]);
+
+  // Count a source as heard the first time it plays for the current file.
+  useEffect(() => {
+    if (!playerState.playing) return;
+    const played = playedRef.current;
+    if (played.has(playerState.source)) return;
+    played.add(playerState.source);
+    track('preview_play', { preview_source: playerState.source });
+    if (played.size === 2 && !comparedRef.current) {
+      comparedRef.current = true;
+      track('ab_compared');
+    }
+  }, [playerState.playing, playerState.source]);
 
   const notes = useMemo(
     () => applyCleanup(rawNotes, cleanup, bpm),
@@ -166,6 +227,14 @@ export function Converter({ className }: { className?: string }) {
       const controller = new AbortController();
       abortRef.current = controller;
 
+      const segmentLength = lengthBucket(range.end - range.start);
+      runsRef.current += 1;
+      const startedAt = performance.now();
+      track('analyze_start', {
+        segment_length: segmentLength,
+        run_index: runsRef.current,
+      });
+
       setStage('analyzing');
       setError(null);
       setProgress(0);
@@ -202,6 +271,13 @@ export function Converter({ className }: { className?: string }) {
         setRawNotes(detected);
         if (!bpmTouched) setBpm(estimateTempo(detected));
         setStage('ready');
+        segmentSecondsRef.current = range.end - range.start;
+        track('analyze_complete', {
+          segment_length: segmentLength,
+          duration_ms: Math.round(performance.now() - startedAt),
+          empty_result: detected.length === 0 ? 'yes' : 'no',
+          run_index: runsRef.current,
+        });
       } catch (caught) {
         if (
           controller.signal.aborted ||
@@ -209,6 +285,10 @@ export function Converter({ className }: { className?: string }) {
         ) {
           return;
         }
+        track('analyze_error', {
+          reason: analyzeErrorReason(caught),
+          segment_length: segmentLength,
+        });
         setStage('error');
         setError(
           caught instanceof AudioError
@@ -225,7 +305,13 @@ export function Converter({ className }: { className?: string }) {
 
   const loadBuffer = useCallback(
     async (buffer: AudioBuffer, name: string) => {
+      const origin = originRef.current;
       if (buffer.duration > MAX_DURATION_SECONDS) {
+        track('file_rejected', {
+          input_source: origin.source,
+          reason: 'too_long',
+          file_ext: fileExtension(name),
+        });
         setStage('error');
         setError({
           message: `${name} is ${formatSeconds(buffer.duration)} long, over the ${
@@ -234,6 +320,21 @@ export function Converter({ className }: { className?: string }) {
           hint: 'Export a shorter section from your DAW and try again.',
         });
         return;
+      }
+
+      filesLoadedRef.current += 1;
+      playedRef.current = new Set();
+      comparedRef.current = false;
+      adjustedRef.current = new Set();
+      track('file_loaded', {
+        input_source: origin.source,
+        file_ext: fileExtension(name),
+        audio_length: lengthBucket(buffer.duration),
+        example_slug: origin.exampleSlug,
+        file_index: filesLoadedRef.current,
+      });
+      if (filesLoadedRef.current === 2) {
+        track('second_file_loaded', { input_source: origin.source });
       }
 
       const end = Math.min(buffer.duration, DEFAULT_SEGMENT_SECONDS);
@@ -247,8 +348,9 @@ export function Converter({ className }: { className?: string }) {
   );
 
   const handleFile = useCallback(
-    async (file: File) => {
+    async (file: File, origin: FileOrigin = { source: 'upload' }) => {
       resetAll();
+      originRef.current = origin;
       setStage('decoding');
       setProgressLabel('Reading the file');
       // Start the model download while the file decodes.
@@ -258,6 +360,11 @@ export function Converter({ className }: { className?: string }) {
         const buffer = await decodeAudioFile(file);
         await loadBuffer(buffer, file.name);
       } catch (caught) {
+        track('file_rejected', {
+          input_source: origin.source,
+          reason: rejectReason(caught),
+          file_ext: fileExtension(file.name),
+        });
         setStage('error');
         setError(
           caught instanceof AudioError
@@ -279,12 +386,21 @@ export function Converter({ className }: { className?: string }) {
       setProgressLabel('Loading the example');
       void preloadModel();
 
+      const origin: FileOrigin = {
+        source: 'example',
+        exampleSlug: EXAMPLES.find((example) => example.audioUrl === url)?.slug,
+      };
       try {
         const response = await fetch(url);
         if (!response.ok) throw new Error('fetch failed');
         const blob = await response.blob();
-        await handleFile(new File([blob], name, { type: blob.type }));
+        await handleFile(new File([blob], name, { type: blob.type }), origin);
       } catch {
+        track('file_rejected', {
+          input_source: 'example',
+          reason: 'example_unavailable',
+          file_ext: fileExtension(name),
+        });
         setStage('error');
         setError({
           message: 'Could not load the example.',
@@ -320,11 +436,12 @@ export function Converter({ className }: { className?: string }) {
   const handleDetectionChange = useCallback(
     async (next: TranscribeOptions) => {
       setDetection(next);
+      trackAdjusted('detection');
       if (!modelOutput) return;
       const detected = await notesFromOutput(modelOutput, next);
       setRawNotes(detected);
     },
-    [modelOutput]
+    [modelOutput, trackAdjusted]
   );
 
   const handleSelectionChange = useCallback(
@@ -348,7 +465,14 @@ export function Converter({ className }: { className?: string }) {
       trackName: audio.name.replace(/\.[^.]+$/, ''),
     });
     downloadBlob(blob, midiFileName(audio.name));
-  }, [audio, bpm, notes]);
+    track('midi_download', {
+      input_source: originRef.current.source,
+      segment_length: lengthBucket(segmentSecondsRef.current),
+      cleanup_active: cleanupActive ? 'yes' : 'no',
+      bpm_edited: bpmTouched ? 'yes' : 'no',
+      file_index: filesLoadedRef.current,
+    });
+  }, [audio, bpm, bpmTouched, cleanupActive, notes]);
 
   const busy = stage === 'decoding' || stage === 'analyzing';
   const segmentSeconds = selection.end - selection.start;
@@ -446,6 +570,11 @@ export function Converter({ className }: { className?: string }) {
                     variant="outline"
                     className="h-10 rounded-full"
                     onClick={() => {
+                      if (stage === 'analyzing') {
+                        track('analyze_cancel', {
+                          segment_length: lengthBucket(segmentSeconds),
+                        });
+                      }
                       abortRef.current?.abort();
                       setStage(audio ? 'ready' : 'idle');
                     }}
@@ -643,11 +772,15 @@ export function Converter({ className }: { className?: string }) {
                     detection={detection}
                     onDetectionChange={handleDetectionChange}
                     cleanup={cleanup}
-                    onCleanupChange={setCleanup}
+                    onCleanupChange={(next) => {
+                      setCleanup(next);
+                      trackAdjusted('cleanup');
+                    }}
                     bpm={bpm}
                     onBpmChange={(next) => {
                       setBpm(next);
                       setBpmTouched(true);
+                      trackAdjusted('tempo');
                     }}
                   />
                 </div>

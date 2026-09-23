@@ -93,7 +93,8 @@ export async function analyze(
     instancePromise = null;
     throw new AudioError(
       'Could not load the transcription model.',
-      'Check your connection and reload the page. The model is about 1 MB and is cached after the first run.'
+      'Check your connection and reload the page. The model is about 1 MB and is cached after the first run.',
+      'model_load_failed'
     );
   }
 
@@ -121,11 +122,14 @@ export async function analyze(
     );
   } catch (error) {
     if (signal?.aborted) throw new DOMException('Cancelled', 'AbortError');
+    const outOfMemory =
+      error instanceof Error && /memory|allocat/i.test(error.message);
     throw new AudioError(
       'The transcription ran out of resources.',
-      error instanceof Error && /memory|allocat/i.test(error.message)
+      outOfMemory
         ? 'Try a shorter segment, or close other heavy browser tabs.'
-        : 'Try a shorter segment. 15 to 60 seconds is the reliable range.'
+        : 'Try a shorter segment. 15 to 60 seconds is the reliable range.',
+      outOfMemory ? 'out_of_memory' : 'inference_failed'
     );
   }
 

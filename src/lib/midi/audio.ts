@@ -32,11 +32,22 @@ export const ACCEPTED_EXTENSIONS = [
   '.aac',
 ];
 
+/** Stable failure category, reported to analytics in place of the message. */
+export type AudioErrorCode =
+  | 'unsupported_format'
+  | 'too_large'
+  | 'decode_failed'
+  | 'segment_too_short'
+  | 'model_load_failed'
+  | 'inference_failed'
+  | 'out_of_memory';
+
 export class AudioError extends Error {
   constructor(
     message: string,
     /** Short hint shown under the error, telling the user what to try next. */
-    readonly hint?: string
+    readonly hint?: string,
+    readonly code?: AudioErrorCode
   ) {
     super(message);
     this.name = 'AudioError';
@@ -86,7 +97,8 @@ export async function decodeAudioFile(file: File): Promise<AudioBuffer> {
   if (!isAcceptedFile(file)) {
     throw new AudioError(
       `${file.name} is not an audio file we can read.`,
-      `Supported formats: ${ACCEPTED_EXTENSIONS.join(', ')}.`
+      `Supported formats: ${ACCEPTED_EXTENSIONS.join(', ')}.`,
+      'unsupported_format'
     );
   }
   if (file.size > MAX_FILE_BYTES) {
@@ -94,7 +106,8 @@ export async function decodeAudioFile(file: File): Promise<AudioBuffer> {
       `${file.name} is ${formatBytes(file.size)}, over the ${formatBytes(
         MAX_FILE_BYTES
       )} limit.`,
-      'Export a shorter section from your DAW and try again.'
+      'Export a shorter section from your DAW and try again.',
+      'too_large'
     );
   }
 
@@ -104,7 +117,8 @@ export async function decodeAudioFile(file: File): Promise<AudioBuffer> {
   } catch {
     throw new AudioError(
       `Could not decode ${file.name}.`,
-      'The file may be corrupt, DRM-protected, or use a codec this browser does not support. Try exporting a WAV.'
+      'The file may be corrupt, DRM-protected, or use a codec this browser does not support. Try exporting a WAV.',
+      'decode_failed'
     );
   }
 }
@@ -125,7 +139,8 @@ export async function prepareForModel(
   if (segmentSeconds < 0.2) {
     throw new AudioError(
       'The selected segment is too short to transcribe.',
-      'Select at least half a second of audio.'
+      'Select at least half a second of audio.',
+      'segment_too_short'
     );
   }
 
@@ -141,7 +156,8 @@ export async function prepareForModel(
   } catch {
     throw new AudioError(
       'Ran out of memory while preparing the audio.',
-      'Try a shorter segment — 15 to 60 seconds works best.'
+      'Try a shorter segment — 15 to 60 seconds works best.',
+      'out_of_memory'
     );
   }
 }
