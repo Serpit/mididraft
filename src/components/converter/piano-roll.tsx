@@ -171,9 +171,9 @@ export function PianoRoll({
   };
 
   return (
-    <div className={cn('flex gap-2', className)}>
+    <div className={cn('flex h-full gap-3', className)}>
       {/* Pitch axis */}
-      <div className="flex w-10 shrink-0 flex-col justify-between py-0.5 text-[10px] tabular-nums text-muted-foreground">
+      <div className="st-readout flex w-10 shrink-0 flex-col justify-between py-1 text-[11px] text-muted-foreground">
         <span>{pitchToName(range.high)}</span>
         <span>{pitchToName(Math.round((range.high + range.low) / 2))}</span>
         <span>{pitchToName(range.low)}</span>
@@ -204,7 +204,7 @@ export function PianoRoll({
               'aria-label': `Piano roll showing ${notes.length} notes`,
             })}
         className={cn(
-          'piano-roll relative h-48 flex-1 overflow-hidden rounded-lg border bg-background',
+          'piano-roll relative h-full min-h-48 min-w-0 flex-1 overflow-hidden rounded-xl border border-hairline bg-surface-strong',
           onSeek &&
             'cursor-pointer focus-visible:ring-2 focus-visible:ring-ring'
         )}

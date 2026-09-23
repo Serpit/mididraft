@@ -3,8 +3,6 @@ import { PianoRoll } from '@/components/converter/piano-roll';
 import { SettingsPanel } from '@/components/converter/settings-panel';
 import { Transport } from '@/components/converter/transport';
 import { Waveform } from '@/components/converter/waveform';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -33,6 +31,7 @@ import { Routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import {
   IconAlertTriangle,
+  IconChevronDown,
   IconDownload,
   IconRefresh,
   IconX,
@@ -74,6 +73,8 @@ export function Converter({ className }: { className?: string }) {
   const [bpm, setBpm] = useState(120);
   const [bpmTouched, setBpmTouched] = useState(false);
   const [showBefore, setShowBefore] = useState(true);
+  /** Secondary controls stay closed until someone asks for them. */
+  const [adjustOpen, setAdjustOpen] = useState(false);
 
   const [playerState, setPlayerState] = useState({
     playing: false,
@@ -152,6 +153,7 @@ export function Converter({ className }: { className?: string }) {
     setLooping(false);
     setError(null);
     setProgress(0);
+    setAdjustOpen(false);
   }, []);
 
   const runAnalysis = useCallback(
@@ -293,6 +295,27 @@ export function Converter({ className }: { className?: string }) {
     [handleFile, resetAll]
   );
 
+  /*
+   * The example cards further down the page load a clip straight into the
+   * converter instead of just playing a file. "Hear the conversion" is the
+   * whole promise of the section, and making the reader scroll back up and
+   * find the right button breaks it.
+   */
+  useEffect(() => {
+    const onLoadExample = (event: Event) => {
+      const detail = (event as CustomEvent<{ url: string; name: string }>)
+        .detail;
+      if (!detail?.url) return;
+      document
+        .getElementById('converter')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      void handleExample(detail.url, detail.name);
+    };
+    window.addEventListener('mididraft:load-example', onLoadExample);
+    return () =>
+      window.removeEventListener('mididraft:load-example', onLoadExample);
+  }, [handleExample]);
+
   // Re-derive notes when a detection setting changes; no model re-run needed.
   const handleDetectionChange = useCallback(
     async (next: TranscribeOptions) => {
@@ -333,22 +356,41 @@ export function Converter({ className }: { className?: string }) {
     audio !== null &&
     stage === 'ready' &&
     Math.abs(playerState.duration - segmentSeconds) > 0.05;
+  const ready = stage === 'ready';
 
   return (
-    <div className={cn('space-y-6', className)}>
-      {!audio && stage !== 'decoding' && (
+    <div className={cn('space-y-5', className)}>
+      {error && (
+        <div
+          role="alert"
+          className="st-card border-destructive/30 bg-destructive/5 p-5"
+        >
+          <div className="flex gap-3">
+            <IconAlertTriangle className="mt-0.5 size-5 shrink-0 text-destructive" />
+            <div className="min-w-0">
+              <p className="font-medium">{error.message}</p>
+              {error.hint && (
+                <p className="mt-1 text-muted-foreground">{error.hint}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!audio && !busy && (
         <>
           <DropZone onFile={handleFile} disabled={busy} />
+
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-sm text-muted-foreground">
-              Or try an example:
+              No file handy? Try one of ours:
             </span>
             {EXAMPLES.map((example) => (
               <Button
                 key={example.slug}
                 type="button"
-                size="sm"
                 variant="outline"
+                className="h-10 rounded-full bg-surface"
                 disabled={busy}
                 onClick={() =>
                   handleExample(example.audioUrl, example.fileName)
@@ -361,181 +403,242 @@ export function Converter({ className }: { className?: string }) {
         </>
       )}
 
-      {error && (
-        <Alert variant="destructive">
-          <IconAlertTriangle className="size-4" />
-          <AlertTitle>{error.message}</AlertTitle>
-          {error.hint && <AlertDescription>{error.hint}</AlertDescription>}
-        </Alert>
-      )}
-
-      {busy && (
-        <div className="rounded-xl border bg-card p-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium">{progressLabel}…</p>
-              <p className="text-xs text-muted-foreground">
-                {audio?.name ?? 'Preparing'}
-                {stage === 'analyzing' &&
-                  ` · ${segmentSeconds.toFixed(0)}s selected`}
+      {/*
+       * The card below has no `overflow-hidden` on purpose: it would make the
+       * card a scroll container and kill the sticky action bar, which is what
+       * keeps play and download in reach while the settings are open.
+       */}
+      {(audio || busy) && (
+        <div className="st-card">
+          {/* The file, folded down to a line once it is loaded. */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-2xl border-b border-hairline px-5 py-3">
+            <div className="min-w-0">
+              <p className="truncate font-medium">
+                {audio?.name ?? 'Reading the file'}
+              </p>
+              <p className="st-readout mt-0.5 text-xs text-muted-foreground">
+                {audio
+                  ? `${formatSeconds(audio.buffer.duration)} · ${segmentSeconds.toFixed(0)}s selected · stays on this device`
+                  : 'decoding on this device'}
               </p>
             </div>
             <Button
               type="button"
-              size="sm"
               variant="ghost"
-              onClick={() => {
-                abortRef.current?.abort();
-                setStage(audio ? 'ready' : 'idle');
-              }}
+              className="h-10 rounded-full"
+              onClick={resetAll}
             >
-              <IconX className="mr-1 size-4" />
-              Cancel
-            </Button>
-          </div>
-          <Progress value={progress} className="mt-4" />
-        </div>
-      )}
-
-      {audio && (
-        <div className="space-y-6 rounded-xl border bg-card p-4 sm:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium">{audio.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatSeconds(audio.buffer.duration)} ·{' '}
-                {audio.buffer.sampleRate} Hz · processed on this device
-              </p>
-            </div>
-            <Button type="button" size="sm" variant="ghost" onClick={resetAll}>
-              <IconX className="mr-1 size-4" />
-              Start over
+              <IconX className="mr-1.5 size-4" />
+              Change file
             </Button>
           </div>
 
-          <Waveform
-            peaks={audio.peaks}
-            durationSeconds={audio.buffer.duration}
-            currentTime={selection.start + playerState.currentTime}
-            selection={selection}
-            onSelectionChange={handleSelectionChange}
-            maxSelectionSeconds={MAX_SEGMENT_SECONDS}
-            disabled={busy}
-          />
-
-          {selectionChanged && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed bg-muted/40 px-4 py-3">
-              <p className="text-sm text-muted-foreground">
-                You changed the selection. Convert this{' '}
-                {segmentSeconds.toFixed(0)}s section to update the result.
+          {busy && (
+            <div className="px-5 py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-medium">{progressLabel}…</p>
+                <div className="flex items-center gap-3">
+                  <span className="st-readout text-sm text-muted-foreground">
+                    {progress}%
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-10 rounded-full"
+                    onClick={() => {
+                      abortRef.current?.abort();
+                      setStage(audio ? 'ready' : 'idle');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+              <Progress value={progress} className="mt-4 h-2" />
+              <p className="mt-3 text-sm text-muted-foreground">
+                Running on your own machine. Nothing has been uploaded.
               </p>
-              <Button
-                type="button"
-                size="sm"
-                onClick={() =>
-                  audio && runAnalysis(audio.buffer, selection, detection)
-                }
-              >
-                <IconRefresh className="mr-1 size-4" />
-                Convert selection
-              </Button>
             </div>
           )}
 
-          {stage === 'ready' && (
-            <>
-              <Transport
-                playing={playerState.playing}
-                source={playerState.source}
-                currentTime={playerState.currentTime}
-                duration={playerState.duration}
-                looping={looping}
-                onToggle={() => playerRef.current?.toggle()}
-                onStop={() => playerRef.current?.stop()}
-                onSourceChange={(source) =>
-                  playerRef.current?.setSource(source)
-                }
-                onLoopChange={handleLoopChange}
-                disabled={notes.length === 0}
+          {audio && (
+            <div className="border-b border-hairline px-5 py-4">
+              <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+                <span className="st-eyebrow flex items-center gap-2">
+                  <span
+                    aria-hidden="true"
+                    className="st-key-audio size-2 rounded-full"
+                  />
+                  Original audio
+                </span>
+                <span className="st-readout text-xs text-muted-foreground">
+                  drag the handles to pick a section
+                </span>
+              </div>
+
+              <Waveform
+                peaks={audio.peaks}
+                durationSeconds={audio.buffer.duration}
+                currentTime={selection.start + playerState.currentTime}
+                selection={selection}
+                onSelectionChange={handleSelectionChange}
+                maxSelectionSeconds={MAX_SEGMENT_SECONDS}
+                disabled={busy}
               />
 
-              <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-                <div className="space-y-3">
-                  <PianoRoll
-                    notes={notes}
-                    ghostNotes={
-                      showBefore && cleanupActive ? rawNotes : undefined
+              {selectionChanged && (
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-audio/40 bg-audio/5 px-4 py-3">
+                  <p className="text-sm">
+                    You changed the selection. Convert this{' '}
+                    {segmentSeconds.toFixed(0)}s section to update the notes.
+                  </p>
+                  <Button
+                    type="button"
+                    className="h-10 rounded-full"
+                    onClick={() =>
+                      audio && runAnalysis(audio.buffer, selection, detection)
                     }
-                    durationSeconds={Math.max(playerState.duration, 0.001)}
-                    currentTime={playerState.currentTime}
-                    onSeek={(seconds) => playerRef.current?.seek(seconds)}
-                  />
+                  >
+                    <IconRefresh className="mr-1.5 size-4" />
+                    Convert selection
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{stats.count} notes</Badge>
-                    {stats.lowestPitch !== null && (
-                      <Badge variant="secondary">
-                        {pitchToName(stats.lowestPitch)} –{' '}
-                        {pitchToName(stats.highestPitch ?? stats.lowestPitch)}
-                      </Badge>
-                    )}
-                    <Badge variant="secondary">
-                      median {Math.round(stats.medianDurationMs)} ms
-                    </Badge>
-                    {stats.polyphonicCount > 0 && (
-                      <Badge variant="outline">
-                        {stats.polyphonicCount} overlapping
-                      </Badge>
-                    )}
-                    <Badge variant="outline">{bpm} BPM</Badge>
-                    {cleanupActive && (
-                      <button
-                        type="button"
-                        onClick={() => setShowBefore((value) => !value)}
-                        className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                      >
-                        {showBefore ? 'Hide' : 'Show'} the {rawStats.count}{' '}
-                        notes before cleanup
-                      </button>
-                    )}
-                  </div>
+          {ready && (
+            <>
+              {/* Listen first: the A/B switch is the top of the result. */}
+              <div className="border-b border-hairline px-5 py-4">
+                <Transport
+                  playing={playerState.playing}
+                  source={playerState.source}
+                  currentTime={playerState.currentTime}
+                  duration={playerState.duration}
+                  looping={looping}
+                  onToggle={() => playerRef.current?.toggle()}
+                  onSourceChange={(source) =>
+                    playerRef.current?.setSource(source)
+                  }
+                  onLoopChange={handleLoopChange}
+                  disabled={notes.length === 0}
+                />
+              </div>
 
-                  <div className="flex flex-wrap items-center gap-3 pt-1">
-                    <Button
+              <div className="px-5 py-4">
+                <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+                  <span className="st-eyebrow flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="st-key-midi size-2 rounded-full"
+                    />
+                    Transcribed MIDI
+                  </span>
+                  {cleanupActive && (
+                    <button
                       type="button"
-                      size="lg"
-                      onClick={handleExport}
-                      disabled={notes.length === 0}
+                      onClick={() => setShowBefore((value) => !value)}
+                      className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
                     >
-                      <IconDownload className="mr-2 size-4" />
-                      Download .mid — free
-                    </Button>
-                    <p className="text-xs text-muted-foreground">
-                      Standard MIDI file with tempo. No account needed.
-                    </p>
-                  </div>
-
-                  {notes.length === 0 && (
-                    <Alert>
-                      <IconAlertTriangle className="size-4" />
-                      <AlertTitle>No notes came through</AlertTitle>
-                      <AlertDescription>
-                        Lower the sensitivity, or pick a section where a single
-                        instrument plays clearly. Dense mixes and heavy reverb
-                        are the usual causes.{' '}
-                        <Link
-                          to={Routes.GuideImproveResults}
-                          className="underline underline-offset-2"
-                        >
-                          See what helps
-                        </Link>
-                        .
-                      </AlertDescription>
-                    </Alert>
+                      {showBefore ? 'Hide' : 'Show'} the {rawStats.count} notes
+                      before cleanup
+                    </button>
                   )}
                 </div>
 
-                <div className="rounded-lg border bg-background p-4">
+                <PianoRoll
+                  className="min-h-48"
+                  notes={notes}
+                  ghostNotes={
+                    showBefore && cleanupActive ? rawNotes : undefined
+                  }
+                  durationSeconds={Math.max(playerState.duration, 0.001)}
+                  currentTime={playerState.currentTime}
+                  onSeek={(seconds) => playerRef.current?.seek(seconds)}
+                />
+
+                <p className="st-readout mt-3 text-sm text-muted-foreground">
+                  {stats.count} notes
+                  {stats.lowestPitch !== null && (
+                    <>
+                      {' · '}
+                      {pitchToName(stats.lowestPitch)}–
+                      {pitchToName(stats.highestPitch ?? stats.lowestPitch)}
+                    </>
+                  )}
+                  {' · '}
+                  {Math.round(stats.medianDurationMs)} ms median
+                  {' · '}
+                  {bpm} BPM
+                </p>
+
+                {notes.length === 0 && (
+                  <div className="st-inner mt-4 p-5">
+                    <p className="font-medium">No notes came through</p>
+                    <p className="mt-1.5 text-muted-foreground">
+                      Lower the sensitivity, or pick a section where a single
+                      instrument plays clearly. Dense mixes and heavy reverb are
+                      the usual causes.{' '}
+                      <Link
+                        to={Routes.GuideImproveResults}
+                        className="underline underline-offset-4"
+                      >
+                        See what helps
+                      </Link>
+                      .
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/*
+               * The two things a first-time visitor came for, side by side,
+               * and always in the same place: adjust, or take the file.
+               */}
+              <div className="sticky bottom-0 z-20 flex flex-wrap items-center gap-3 rounded-b-2xl border-t border-hairline bg-surface/95 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur lg:static lg:pb-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 rounded-full bg-surface-strong px-5"
+                  aria-expanded={adjustOpen}
+                  aria-controls="converter-adjust"
+                  onClick={() => setAdjustOpen((value) => !value)}
+                >
+                  {adjustOpen ? 'Hide note settings' : 'Adjust notes'}
+                  <IconChevronDown
+                    className={cn(
+                      'ml-1.5 size-4 transition-transform',
+                      adjustOpen && 'rotate-180'
+                    )}
+                  />
+                </Button>
+
+                <Button
+                  type="button"
+                  size="lg"
+                  className="ml-auto h-12 rounded-full px-6 text-base"
+                  onClick={handleExport}
+                  disabled={notes.length === 0}
+                >
+                  <IconDownload className="mr-2 size-4" />
+                  Download MIDI
+                </Button>
+              </div>
+
+              {/*
+               * Mounted only while it is open, not hidden with CSS. Base UI
+               * measures slider geometry on mount, and a slider first mounted
+               * inside `display: none` measures zero — every thumb sits at the
+               * left end no matter what its value is. Unmounting costs
+               * nothing here: the parameter values live in this component's
+               * state, not the panel's.
+               */}
+              {adjustOpen && (
+                <div
+                  id="converter-adjust"
+                  className="rounded-b-2xl border-t border-hairline px-5 py-6"
+                >
                   <SettingsPanel
                     detection={detection}
                     onDetectionChange={handleDetectionChange}
@@ -548,7 +651,7 @@ export function Converter({ className }: { className?: string }) {
                     }}
                   />
                 </div>
-              </div>
+              )}
             </>
           )}
         </div>

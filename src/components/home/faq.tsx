@@ -1,5 +1,4 @@
-import { HeaderSection } from '@/components/shared/header-section';
-import { ScrollReveal } from '@/components/shared/scroll-reveal';
+import Container from '@/components/layout/container';
 import {
   Accordion,
   AccordionContent,
@@ -65,36 +64,38 @@ export const FAQ_ITEMS = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="px-4 py-16 md:py-20">
-      <div className="mx-auto max-w-4xl">
-        <ScrollReveal>
-          <HeaderSection
-            title="FAQ"
-            subtitle="Audio to MIDI, answered honestly"
-          />
-        </ScrollReveal>
+    <section id="faq" className="py-16 sm:py-20">
+      <Container className="px-4">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="st-eyebrow">FAQ</p>
+          <h2 className="mt-3 text-balance text-2xl font-medium tracking-tight sm:text-3xl">
+            Audio to MIDI, answered honestly
+          </h2>
+          <p className="mt-3 leading-relaxed text-muted-foreground">
+            Including the parts that do not work. You will find out anyway the
+            first time you convert a full mix.
+          </p>
+        </div>
 
-        <ScrollReveal delay={150} className="mx-auto mt-12 max-w-4xl">
-          <Accordion className="w-full rounded-2xl border border-primary/15 px-4 py-3 shadow-sm ring-4 ring-primary/10 dark:border-primary/10 dark:ring-primary/5 sm:px-8">
-            {FAQ_ITEMS.map((item) => (
-              <AccordionItem
-                key={item.id}
-                value={item.id}
-                className="border-dashed"
-              >
-                <AccordionTrigger className="text-left text-base hover:no-underline">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-base leading-relaxed text-muted-foreground">
-                    {item.answer}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </ScrollReveal>
-      </div>
+        <Accordion className="mx-auto mt-10 w-full max-w-3xl space-y-3">
+          {FAQ_ITEMS.map((item) => (
+            <AccordionItem
+              key={item.id}
+              value={item.id}
+              className="st-card border-b-0 px-5"
+            >
+              <AccordionTrigger className="py-4 text-left text-base font-medium hover:no-underline">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent>
+                <p className="pb-3 leading-relaxed text-muted-foreground">
+                  {item.answer}
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Container>
     </section>
   );
 }

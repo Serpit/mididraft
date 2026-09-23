@@ -28,7 +28,8 @@ function ExamplesPage() {
   return (
     <Container className="px-4 py-14">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <p className="st-eyebrow">Before and after</p>
+        <h1 className="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">
           {title}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">{description}</p>
@@ -42,14 +43,16 @@ function ExamplesPage() {
 
       <div className="mx-auto mt-12 max-w-3xl space-y-8">
         {EXAMPLES.map((example) => (
-          <article
-            key={example.slug}
-            className="rounded-xl border bg-card p-6 sm:p-8"
-          >
+          <article key={example.slug} className="st-card p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="text-xl font-semibold">{example.title}</h2>
               {example.kind === 'limitation' && (
-                <Badge variant="outline">Hard case</Badge>
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-transparent bg-destructive/10 text-destructive"
+                >
+                  Hard case
+                </Badge>
               )}
             </div>
 
@@ -81,7 +84,10 @@ function ExamplesPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 to={Routes.Root}
-                className={cn(buttonVariants({ size: 'sm' }))}
+                className={cn(
+                  buttonVariants({ size: 'sm' }),
+                  'h-10 rounded-full px-5'
+                )}
               >
                 Convert this in the browser
                 <IconArrowRight className="ml-1 size-4" />
@@ -90,7 +96,8 @@ function ExamplesPage() {
                 href={example.audioUrl}
                 download={example.fileName}
                 className={cn(
-                  buttonVariants({ size: 'sm', variant: 'outline' })
+                  buttonVariants({ size: 'sm', variant: 'outline' }),
+                  'h-10 rounded-full bg-surface-strong px-5'
                 )}
               >
                 <IconDownload className="mr-1 size-4" />
@@ -101,7 +108,7 @@ function ExamplesPage() {
         ))}
       </div>
 
-      <div className="mx-auto mt-12 max-w-3xl rounded-xl border border-dashed bg-muted/30 p-6">
+      <div className="st-card mx-auto mt-12 max-w-3xl p-6">
         <h2 className="font-semibold">Why there is no accuracy percentage</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           A single number hides the thing that matters: which material works.

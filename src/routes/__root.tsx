@@ -50,7 +50,7 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'theme-color',
-        content: '#09090b',
+        content: '#fdfcfc',
       },
     ],
     links: [

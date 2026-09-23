@@ -50,16 +50,17 @@ export function Navbar({ scroll = true }: NavbarProps) {
   return (
     <header
       className={cn(
-        'sticky inset-x-0 top-0 z-40 py-4 transition-all duration-300',
-        showBarBg && 'border-b'
+        'sticky inset-x-0 top-0 z-40 py-3 transition-colors duration-200',
+        showBarBg && 'border-b border-hairline'
       )}
     >
-      {showBarBg && (
-        <div
-          className="absolute inset-0 z-0 bg-muted/50 backdrop-blur-md"
-          aria-hidden="true"
-        />
-      )}
+      <div
+        className={cn(
+          'absolute inset-0 z-0 bg-background',
+          showBarBg && 'bg-background/85 backdrop-blur-md'
+        )}
+        aria-hidden="true"
+      />
       <div className="relative z-10">
         <Container className="px-4">
           <nav
@@ -72,7 +73,7 @@ export function Navbar({ scroll = true }: NavbarProps) {
               className="flex items-center gap-2 shrink-0"
             >
               <Logo />
-              <span className="text-xl font-semibold">
+              <span className="text-lg font-medium tracking-tight">
                 {websiteConfig.metadata?.name}
               </span>
             </Link>
@@ -88,10 +89,10 @@ export function Navbar({ scroll = true }: NavbarProps) {
                     <NavigationMenuItem key={item.title} value={item.title}>
                       <NavigationMenuTrigger
                         className={cn(
-                          'bg-transparent',
+                          'rounded-full bg-transparent text-muted-foreground hover:text-foreground',
                           item.items.some((sub) =>
                             isLinkActive(sub.href, pathname)
-                          ) && 'font-semibold text-foreground'
+                          ) && 'font-medium text-foreground'
                         )}
                       >
                         {item.title}
@@ -150,9 +151,9 @@ export function Navbar({ scroll = true }: NavbarProps) {
                         render={<Link to={item.href ?? '#'} />}
                         className={cn(
                           navigationMenuTriggerStyle(),
-                          'bg-transparent',
+                          'rounded-full bg-transparent text-muted-foreground hover:text-foreground',
                           isLinkActive(item.href, pathname) &&
-                            'font-semibold text-primary'
+                            'font-medium text-foreground'
                         )}
                       >
                         {item.title}
@@ -177,10 +178,10 @@ export function Navbar({ scroll = true }: NavbarProps) {
                         type="button"
                         className={cn(
                           buttonVariants({
-                            variant: 'outline',
+                            variant: 'ghost',
                             size: 'sm',
                           }),
-                          'cursor-pointer'
+                          'cursor-pointer rounded-full'
                         )}
                       >
                         {messages.auth.common.login}
@@ -188,7 +189,10 @@ export function Navbar({ scroll = true }: NavbarProps) {
                     </LoginWrapper>
                     <Link
                       to={Routes.Register}
-                      className={buttonVariants({ size: 'sm' })}
+                      className={cn(
+                        buttonVariants({ size: 'sm' }),
+                        'rounded-full px-4'
+                      )}
                     >
                       {messages.auth.common.signup}
                     </Link>

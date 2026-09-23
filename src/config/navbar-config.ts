@@ -2,11 +2,7 @@ import { Routes } from '@/lib/routes';
 import { messages } from '@/messages';
 import { productConfig } from './product';
 import {
-  IconBuilding,
   IconAdjustmentsBolt,
-  IconFileText,
-  IconMail,
-  IconShieldCheck,
   IconSparkles,
   IconStack2,
   IconWaveSine,
@@ -20,7 +16,9 @@ const m = messages.nav;
  * Navbar links.
  *
  * Pages for features that are not built yet stay out of the nav — see
- * `productConfig.features`.
+ * `productConfig.features`. About, contact and the legal pages live in the
+ * footer: on a first visit the nav should only offer the tool, the proof and
+ * the guides.
  */
 export function getNavbarLinks(): MenuItemConfig[] {
   const links: MenuItemConfig[] = [
@@ -77,40 +75,6 @@ export function getNavbarLinks(): MenuItemConfig[] {
   if (websiteConfig.blog?.enable) {
     links.push({ title: m.blog, href: Routes.Blog, external: false });
   }
-
-  links.push({
-    title: m.pages,
-    items: [
-      {
-        title: m.about.title,
-        description: m.about.description,
-        href: Routes.About,
-        icon: IconBuilding,
-        external: false,
-      },
-      {
-        title: m.contact.title,
-        description: m.contact.description,
-        href: Routes.Contact,
-        icon: IconMail,
-        external: false,
-      },
-      {
-        title: m.privacyPolicy.title,
-        description: m.privacyPolicy.description,
-        href: Routes.PrivacyPolicy,
-        icon: IconShieldCheck,
-        external: false,
-      },
-      {
-        title: m.termsOfService.title,
-        description: m.termsOfService.description,
-        href: Routes.TermsOfService,
-        icon: IconFileText,
-        external: false,
-      },
-    ],
-  });
 
   return links;
 }

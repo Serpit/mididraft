@@ -1,9 +1,10 @@
-/* ── Scroll-reveal & entrance animations ── */
+/* ── Design C — warm-white audio tool ────────────────────────────────────
+   Motion is short and only ever reports a change of state. */
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -30,69 +31,63 @@
 }
 
 .animate-fade-up {
-  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-fade-in {
-  animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-crossfade-in {
-  animation: crossfade-in 0.4s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation: crossfade-in 0.3s cubic-bezier(0.25, 1, 0.5, 1) both;
 }
 
-/* Stagger delay utilities for choreographed entrances */
 .delay-0 {
   animation-delay: 0ms;
 }
 .delay-1 {
-  animation-delay: 100ms;
+  animation-delay: 80ms;
 }
 .delay-2 {
-  animation-delay: 200ms;
+  animation-delay: 160ms;
 }
 .delay-3 {
-  animation-delay: 300ms;
+  animation-delay: 240ms;
 }
 .delay-4 {
-  animation-delay: 400ms;
+  animation-delay: 320ms;
 }
 .delay-5 {
-  animation-delay: 500ms;
+  animation-delay: 400ms;
 }
 
-/* Scroll-reveal: hidden until in view */
 .reveal-hidden {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(14px);
 }
 
 .reveal-visible {
-  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ── Global interaction polish ── */
+/* ── Interaction ── */
 
-/* Smooth focus-visible ring for all focusable elements */
 :focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: var(--radius);
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-lg);
 }
 
-/* Smooth transitions for all links and buttons */
 a,
 button,
 [role="button"] {
   transition:
-    color 0.15s ease,
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    opacity 0.15s ease;
+    color 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    opacity 0.18s ease;
 }
 
-/* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -109,17 +104,58 @@ button,
   }
 }
 
-/* custom markdown styles start */
+/* ── Surfaces ──
+   A soft card on a warm ground. Depth is one hairline and a tone shift. */
 
-/* Code block background in dark mode for better visibility */
+.st-card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-2xl);
+}
+
+.st-inner {
+  background: var(--surface-strong);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
+}
+
+/* Small caps label above a block. Quiet, never shouting. */
+.st-eyebrow {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.st-readout {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/*
+ * The audio pair, as a key. Both swatches always appear next to their word,
+ * so the colours are a shorthand for a label that is already on screen rather
+ * than the only thing carrying the meaning.
+ */
+.st-key-audio {
+  background: var(--audio);
+}
+
+.st-key-midi {
+  background: var(--midi);
+}
+
+/* ── Markdown ── */
+
 .dark .prose pre {
-  background: var(--muted);
+  background: var(--surface);
 }
 .dark .prose pre code {
   background: transparent;
 }
 
-/* Remove underline from heading links (from rehype-autolink-headings) */
 .prose h1 a,
 .prose h2 a,
 .prose h3 a,
@@ -137,39 +173,30 @@ button,
   text-decoration: none;
 }
 
-/* hide scrollbar for screenshot */
-/* html {
-  scrollbar-width: none;
-}
-html::-webkit-scrollbar {
-  display: none;
-} */
-
-/* ── Scrollbar styling ── */
 html {
   scrollbar-width: thin;
-  scrollbar-color: gray transparent;
+  scrollbar-color: var(--input) transparent;
 }
-
-/* custom markdown styles end */
 
 /* ── Piano roll palette ──
    Canvas cannot read Tailwind utilities, so the roll's colours live here as
-   plain custom properties and are read back with getComputedStyle. */
+   plain custom properties and are read back with getComputedStyle.
+
+   Notes are the MIDI orange, matching the MIDI half of the A/B switch. */
 .piano-roll {
-  --pr-note: oklch(0.62 0.19 38.4);
-  --pr-ghost: oklch(0.72 0.02 260);
-  --pr-grid: oklch(0.91 0.004 260);
-  --pr-lane: oklch(0.96 0.003 260);
-  --pr-head: oklch(0.58 0.22 27);
-  --pr-loop: oklch(0.62 0.19 38.4);
+  --pr-note: #d8551d;
+  --pr-ghost: #b8b2ab;
+  --pr-grid: #e6e2de;
+  --pr-lane: #f0ece8;
+  --pr-head: #2f6feb;
+  --pr-loop: #d8551d;
 }
 
 .dark .piano-roll {
-  --pr-note: oklch(0.72 0.17 45);
-  --pr-ghost: oklch(0.45 0.015 260);
-  --pr-grid: oklch(0.3 0.006 260);
-  --pr-lane: oklch(0.23 0.004 260);
-  --pr-head: oklch(0.7 0.19 22);
-  --pr-loop: oklch(0.72 0.17 45);
+  --pr-note: #ff8a4c;
+  --pr-ghost: #55504b;
+  --pr-grid: #2b2825;
+  --pr-lane: #211f1d;
+  --pr-head: #7ba5ff;
+  --pr-loop: #ff8a4c;
 }

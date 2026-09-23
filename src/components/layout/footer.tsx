@@ -15,13 +15,13 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
   const socialLinks = getSocialLinks();
 
   return (
-    <footer className={cn('border-t', className)}>
+    <footer className={cn('border-t border-hairline', className)}>
       <Container className="px-4">
         <div className="grid grid-cols-2 gap-8 py-16 md:grid-cols-6">
           <div className="col-span-full flex flex-col items-start md:col-span-2">
             <div className="flex items-center space-x-2">
               <Logo />
-              <span className="text-xl font-semibold">
+              <span className="text-lg font-medium tracking-tight">
                 {websiteConfig.metadata?.name}
               </span>
             </div>
@@ -41,7 +41,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={link.title}
-                    className="inline-flex size-8 items-center justify-center rounded-full border border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all duration-200"
+                    className="inline-flex size-9 items-center justify-center rounded-full border border-hairline bg-surface text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {Icon ? <Icon className="size-4" /> : null}
                   </a>
@@ -55,9 +55,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
               key={section.title}
               className="col-span-1 md:col-span-1 flex flex-col items-start"
             >
-              <span className="text-sm font-semibold uppercase">
-                {section.title}
-              </span>
+              <span className="st-eyebrow">{section.title}</span>
               <ul className="mt-4 list-inside space-y-3">
                 {section.items?.map(
                   (item) =>
@@ -68,7 +66,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
                             href={item.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-muted-foreground transition-colors duration-150 hover:text-primary focus-visible:text-primary data-[active=true]:font-semibold data-[active=true]:text-primary"
+                            className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
                           >
                             {item.title}
                           </a>
@@ -82,7 +80,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
                                   ? 'true'
                                   : undefined
                             }
-                            className="text-sm text-muted-foreground transition-colors duration-150 hover:text-primary focus-visible:text-primary data-[active=true]:font-semibold data-[active=true]:text-primary"
+                            className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:text-foreground data-[active=true]:font-medium data-[active=true]:text-foreground"
                           >
                             {item.title}
                           </Link>
@@ -96,7 +94,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
         </div>
       </Container>
 
-      <div className="border-t py-8">
+      <div className="border-t border-hairline py-8">
         <Container className="px-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
           <span className="text-muted-foreground text-sm">
             &copy; {new Date().getFullYear()} {websiteConfig.metadata?.name}.{' '}

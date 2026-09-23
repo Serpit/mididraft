@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import {
   IconPlayerPauseFilled,
   IconPlayerPlayFilled,
-  IconPlayerStopFilled,
   IconRepeat,
 } from '@tabler/icons-react';
 
@@ -16,17 +15,23 @@ interface TransportProps {
   duration: number;
   looping: boolean;
   onToggle: () => void;
-  onStop: () => void;
   onSourceChange: (source: PreviewSource) => void;
   onLoopChange: (looping: boolean) => void;
   disabled?: boolean;
 }
 
 /**
- * Playback bar with the original/MIDI switch.
+ * Compare the two.
  *
- * Switching keeps the playhead, so the same bar can be heard both ways —
- * the fastest way to tell whether a transcription is worth editing.
+ * One player, one playhead, two sources: switching keeps your place, so the
+ * same bar can be heard both ways. That comparison is the whole reason to
+ * trust or distrust a transcription, so it sits at the top of the result
+ * rather than under it.
+ *
+ * Each side of the switch carries its own colour dot — blue for the
+ * recording, orange for the MIDI — and the same two colours are used on the
+ * waveform and the note roll. The word is always there too; the colour is a
+ * shorthand, never the only signal.
  */
 export function Transport({
   playing,
@@ -35,45 +40,32 @@ export function Transport({
   duration,
   looping,
   onToggle,
-  onStop,
   onSourceChange,
   onLoopChange,
   disabled,
 }: TransportProps) {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <div className="flex items-center gap-1">
-        <Button
-          type="button"
-          size="icon"
-          onClick={onToggle}
-          disabled={disabled}
-          aria-label={playing ? 'Pause' : 'Play'}
-        >
-          {playing ? (
-            <IconPlayerPauseFilled className="size-4" />
-          ) : (
-            <IconPlayerPlayFilled className="size-4" />
-          )}
-        </Button>
-        <Button
-          type="button"
-          size="icon"
-          variant="ghost"
-          onClick={onStop}
-          disabled={disabled}
-          aria-label="Stop"
-        >
-          <IconPlayerStopFilled className="size-4" />
-        </Button>
-      </div>
+      <Button
+        type="button"
+        size="lg"
+        className="size-12 rounded-full p-0"
+        onClick={onToggle}
+        disabled={disabled}
+        aria-label={playing ? 'Pause' : 'Play'}
+      >
+        {playing ? (
+          <IconPlayerPauseFilled className="size-5" />
+        ) : (
+          <IconPlayerPlayFilled className="size-5" />
+        )}
+      </Button>
 
-      {/* Original / MIDI switch */}
-      <div className="inline-flex rounded-lg border p-0.5">
+      <div className="inline-flex h-12 items-center rounded-full border border-hairline bg-surface-strong p-1">
         {(
           [
-            { value: 'audio', label: 'Original' },
-            { value: 'midi', label: 'MIDI' },
+            { value: 'audio', label: 'Original', dot: 'st-key-audio' },
+            { value: 'midi', label: 'MIDI', dot: 'st-key-midi' },
           ] as const
         ).map((option) => (
           <button
@@ -84,13 +76,17 @@ export function Transport({
             disabled={disabled}
             onClick={() => onSourceChange(option.value)}
             className={cn(
-              'rounded-md px-3 py-1 text-sm font-medium transition-colors',
+              'flex h-full items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors',
               source === option.value
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:text-foreground',
               disabled && 'cursor-not-allowed opacity-50'
             )}
           >
+            <span
+              aria-hidden="true"
+              className={cn('size-2 rounded-full', option.dot)}
+            />
             {option.label}
           </button>
         ))}
@@ -98,18 +94,23 @@ export function Transport({
 
       <Button
         type="button"
-        size="sm"
-        variant={looping ? 'secondary' : 'ghost'}
+        variant="outline"
+        className={cn(
+          'h-12 rounded-full bg-surface-strong px-4',
+          looping && 'border-foreground'
+        )}
         onClick={() => onLoopChange(!looping)}
         disabled={disabled}
         aria-pressed={looping}
       >
-        <IconRepeat className="mr-1 size-4" />
-        Loop selection
+        <IconRepeat className="mr-1.5 size-4" />
+        Loop {looping ? 'on' : 'off'}
       </Button>
 
-      <span className="ml-auto text-sm tabular-nums text-muted-foreground">
-        {formatSeconds(currentTime)} / {formatSeconds(duration)}
+      <span className="st-readout ml-auto text-sm text-muted-foreground">
+        <span className="text-foreground">{formatSeconds(currentTime)}</span>
+        {' / '}
+        {formatSeconds(duration)}
       </span>
     </div>
   );

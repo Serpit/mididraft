@@ -6,80 +6,138 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Design C — warm-white audio tool.
+ *
+ * Built for the first ten minutes: one column, one obvious next step, and
+ * nothing on screen that the visitor has not asked for yet. Soft cards,
+ * pill actions, a lot of air.
+ *
+ * The only colour that carries meaning is the audio pair: blue is the
+ * original recording, orange is the transcribed MIDI. That pair is used on
+ * the waveform, the note roll, the A/B switch and nowhere else, so "blue is
+ * what you played, orange is what the model heard" holds everywhere on the
+ * page. Buttons stay black-and-white on purpose — if every control were
+ * coloured, the audio pair would stop meaning anything.
+ *
+ * Light is the default experience. Dark is the same room with the lights off.
+ */
+
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.553 0.195 38.402);
-  --primary-foreground: oklch(0.98 0.016 73.684);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.646 0.222 41.116);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #fdfcfc;
+  --foreground: #1a1917;
+
+  --card: #f5f3f1;
+  --card-foreground: #1a1917;
+  --popover: #ffffff;
+  --popover-foreground: #1a1917;
+
+  --primary: #121110;
+  --primary-foreground: #faf9f8;
+  --secondary: #efece9;
+  --secondary-foreground: #1a1917;
+  --muted: #f2efec;
+  --muted-foreground: #6b6862;
+  --accent: #eae6e2;
+  --accent-foreground: #1a1917;
+  --destructive: #b4281f;
+
+  --border: #e6e2de;
+  --input: #ddd8d3;
+  --ring: #1a1917;
+
+  --surface: #f5f3f1;
+  --surface-strong: #ffffff;
+  --hairline: #e6e2de;
+  /* The audio pair. */
+  --audio: #2f6feb;
+  --midi: #d8551d;
+
+  --chart-1: #2f6feb;
+  --chart-2: #d8551d;
+  --chart-3: #6b6862;
+  --chart-4: #1a1917;
+  --chart-5: #a8a29a;
+
+  --radius: 1.25rem;
+
+  --sidebar: #f5f3f1;
+  --sidebar-foreground: #1a1917;
+  --sidebar-primary: #121110;
+  --sidebar-primary-foreground: #faf9f8;
+  --sidebar-accent: #eae6e2;
+  --sidebar-accent-foreground: #1a1917;
+  --sidebar-border: #e6e2de;
+  --sidebar-ring: #1a1917;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.553 0.195 38.402);
-  --primary-foreground: oklch(0.98 0.016 73.684);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.837 0.128 66.29);
-  --chart-2: oklch(0.705 0.213 47.604);
-  --chart-3: oklch(0.646 0.222 41.116);
-  --chart-4: oklch(0.553 0.195 38.402);
-  --chart-5: oklch(0.47 0.157 37.304);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.705 0.213 47.604);
-  --sidebar-primary-foreground: oklch(0.98 0.016 73.684);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #131211;
+  --foreground: #f7f5f3;
+
+  --card: #1e1c1a;
+  --card-foreground: #f7f5f3;
+  --popover: #232120;
+  --popover-foreground: #f7f5f3;
+
+  --primary: #f7f5f3;
+  --primary-foreground: #131211;
+  --secondary: #2a2724;
+  --secondary-foreground: #f7f5f3;
+  --muted: #1e1c1a;
+  --muted-foreground: #a29d96;
+  --accent: #302c29;
+  --accent-foreground: #f7f5f3;
+  --destructive: #f0685e;
+
+  --border: #322e2b;
+  --input: #433e3a;
+  --ring: #f7f5f3;
+
+  --surface: #1e1c1a;
+  --surface-strong: #262320;
+  --hairline: #322e2b;
+  --audio: #7ba5ff;
+  --midi: #ff8a4c;
+
+  --chart-1: #7ba5ff;
+  --chart-2: #ff8a4c;
+  --chart-3: #a29d96;
+  --chart-4: #f7f5f3;
+  --chart-5: #6b6862;
+
+  --sidebar: #1a1817;
+  --sidebar-foreground: #f7f5f3;
+  --sidebar-primary: #f7f5f3;
+  --sidebar-primary-foreground: #131211;
+  --sidebar-accent: #2a2724;
+  --sidebar-accent-foreground: #f7f5f3;
+  --sidebar-border: #322e2b;
+  --sidebar-ring: #f7f5f3;
 }
 
 @theme inline {
-  --font-brand: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-brand);
-  --font-custom: var(--font-brand);
+  /*
+   * Inter where it is installed, the platform UI face otherwise. Nothing is
+   * downloaded: the first screen is the tool, and it should paint at once.
+   */
+  --font-sans:
+    Inter, "Inter var", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-brand: var(--font-sans);
+  --font-custom: var(--font-sans);
+  --font-mono:
+    "SF Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    monospace;
+
   --border-width: 1px;
+
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-hairline: var(--hairline);
+  --color-audio: var(--audio);
+  --color-midi: var(--midi);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -111,63 +169,40 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+
+  /*
+   * Cards are 20–24px. `--radius-md` stays a normal 10px rather than a pill:
+   * the template uses `rounded-md` for menus and inputs too, and a pill-shaped
+   * dropdown is not softness, it is a bug. The pill belongs to actions, and
+   * the actions ask for it by name.
+   */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
+  --radius-4xl: 32px;
 }
 
 @layer base {
-  /*
-   * Bricolage Grotesque is loaded with `font-display: optional`:
-   *   - Browser uses the fallback system font immediately (no blocking).
-   *   - Webfont is downloaded in the background with LOW priority.
-   *   - If it arrives within the extremely short block period (~100 ms)
-   *     it is used; otherwise the browser NEVER swaps, eliminating CLS
-   *     from font changes on the initial page load.
-   *   - Subsequent visits read the font from cache, so users do see the
-   *     brand font almost every time after the first load.
-   *
-   * WOFF2 files are self-hosted from /public/fonts/ (copied from
-   * node_modules/@fontsource/bricolage-grotesque/files). Only weights
-   * actually used on-site are shipped. Weight 500 is intentionally omitted
-   * — browsers synthesize it from 400 via `font-synthesis`.
-   */
-  @font-face {
-    font-family: "Bricolage Grotesque";
-    font-style: normal;
-    font-weight: 400;
-    font-display: optional;
-    src: url("/fonts/bricolage-400.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Bricolage Grotesque";
-    font-style: normal;
-    font-weight: 600;
-    font-display: optional;
-    src: url("/fonts/bricolage-600.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "Bricolage Grotesque";
-    font-style: normal;
-    font-weight: 700;
-    font-display: optional;
-    src: url("/fonts/bricolage-700.woff2") format("woff2");
-  }
-
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply antialiased bg-background text-foreground;
-    font-family: var(--font-brand);
+    font-family: var(--font-sans);
     font-weight: 400;
+    line-height: 1.6;
   }
   html {
     @apply scroll-smooth;
-    font-family: var(--font-brand);
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
 }

@@ -33,7 +33,9 @@ const priceIds = isPaymentEnabled
 export const websiteConfig: WebsiteConfig = {
   ui: {
     mode: {
-      defaultMode: 'dark',
+      // Design C is a warm-white tool built for a first visit; light is the
+      // default experience and dark is the same room with the lights off.
+      defaultMode: 'light',
       enableSwitch: true,
     },
   },

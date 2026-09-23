@@ -1,6 +1,6 @@
 import { formatSeconds } from '@/lib/midi/audio';
 import { cn } from '@/lib/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface WaveformProps {
   peaks: number[];
@@ -35,6 +35,41 @@ export function Waveform({
 }: WaveformProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState<DragTarget>(null);
+
+  /*
+   * `buildWaveformPeaks` returns a fixed number of peaks. One flex child per
+   * peak gives every bar a sub-pixel width in a narrow container — on a phone,
+   * or whenever the waveform shares a row — and the waveform disappears
+   * entirely. Downsample to whatever the container can actually draw.
+   */
+  const [barCount, setBarCount] = useState(0);
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+    const measure = () =>
+      setBarCount(Math.max(24, Math.floor(element.clientWidth / 3)));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  const bars = useMemo(() => {
+    if (peaks.length === 0 || barCount === 0) return [];
+    if (barCount >= peaks.length) return peaks;
+    const out: number[] = [];
+    const bucket = peaks.length / barCount;
+    for (let index = 0; index < barCount; index++) {
+      const from = Math.floor(index * bucket);
+      const to = Math.max(from + 1, Math.floor((index + 1) * bucket));
+      let peak = 0;
+      for (let i = from; i < to && i < peaks.length; i++) {
+        if (peaks[i] > peak) peak = peaks[i];
+      }
+      out.push(peak);
+    }
+    return out;
+  }, [peaks, barCount]);
 
   const timeAt = useCallback(
     (clientX: number) => {
@@ -92,7 +127,7 @@ export function Waveform({
       <div
         ref={containerRef}
         className={cn(
-          'relative h-24 w-full select-none overflow-hidden rounded-lg border bg-muted/40',
+          'relative h-24 w-full select-none overflow-hidden rounded-xl border border-hairline bg-surface-strong sm:h-28',
           onSeek && !disabled && 'cursor-pointer'
         )}
         onClick={(event) => {
@@ -102,8 +137,8 @@ export function Waveform({
       >
         {/* Waveform bars */}
         <div className="absolute inset-0 flex items-center gap-px px-px">
-          {peaks.map((peak, index) => {
-            const time = (index / peaks.length) * durationSeconds;
+          {bars.map((peak, index) => {
+            const time = (index / bars.length) * durationSeconds;
             const inSelection =
               time >= selection.start && time <= selection.end;
             return (
@@ -111,7 +146,7 @@ export function Waveform({
                 key={index}
                 className={cn(
                   'flex-1 rounded-full transition-colors',
-                  inSelection ? 'bg-primary/70' : 'bg-muted-foreground/25'
+                  inSelection ? 'bg-audio' : 'bg-muted-foreground/25'
                 )}
                 style={{ height: `${Math.max(2, peak * 92)}%` }}
               />
@@ -121,11 +156,11 @@ export function Waveform({
 
         {/* Dimmed regions outside the selection */}
         <div
-          className="absolute inset-y-0 left-0 bg-background/55"
+          className="absolute inset-y-0 left-0 bg-surface-strong/70"
           style={{ width: pct(selection.start) }}
         />
         <div
-          className="absolute inset-y-0 right-0 bg-background/55"
+          className="absolute inset-y-0 right-0 bg-surface-strong/70"
           style={{ width: pct(durationSeconds - selection.end) }}
         />
 
@@ -159,32 +194,32 @@ export function Waveform({
               }
             }}
             className={cn(
-              'absolute inset-y-0 z-10 w-3 -translate-x-1/2 cursor-ew-resize',
+              'absolute inset-y-0 z-10 w-6 -translate-x-1/2 cursor-ew-resize',
               'flex items-center justify-center disabled:cursor-not-allowed'
             )}
             style={{ left: pct(selection[edge]) }}
           >
-            <span className="h-full w-0.5 rounded-full bg-primary shadow-sm" />
+            <span className="h-full w-0.5 rounded-full bg-foreground" />
+            <span className="absolute size-4 rounded-full border border-hairline bg-surface-strong" />
           </button>
         ))}
 
         {/* Playhead */}
         <div
-          className="pointer-events-none absolute inset-y-0 w-px bg-destructive"
+          className="pointer-events-none absolute inset-y-0 w-0.5 rounded-full bg-midi"
           style={{ left: pct(currentTime) }}
         />
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-        <span className="tabular-nums">
-          Selection {formatSeconds(selection.start)} –{' '}
-          {formatSeconds(selection.end)}
-          <span className="ml-1 text-foreground">
-            ({selectionSeconds.toFixed(1)}s)
-          </span>
+        <span className="st-readout">
+          <span className="text-foreground">
+            {formatSeconds(selection.start)} – {formatSeconds(selection.end)}
+          </span>{' '}
+          ({selectionSeconds.toFixed(1)}s selected)
         </span>
-        <span className="tabular-nums">
-          Full file {formatSeconds(durationSeconds)} · max {maxSelectionSeconds}
+        <span className="st-readout">
+          full file {formatSeconds(durationSeconds)} · max {maxSelectionSeconds}
           s per run
         </span>
       </div>
