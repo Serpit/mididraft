@@ -6,7 +6,7 @@ import {
   formatBytes,
 } from '@/lib/midi/audio';
 import { cn } from '@/lib/utils';
-import { IconLock, IconMusic } from '@tabler/icons-react';
+import { IconLock } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 
 interface DropZoneProps {
@@ -43,7 +43,7 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
         if (!disabled) handleFiles(event.dataTransfer.files);
       }}
       className={cn(
-        'st-card px-6 py-10 text-center transition-colors sm:px-10 sm:py-14',
+        'st-card melody-drop text-center transition-colors',
         dragging && 'border-audio bg-audio/5',
         disabled && 'opacity-60'
       )}
@@ -61,48 +61,61 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
         }}
       />
 
-      <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-surface-strong">
-        <IconMusic className="size-6 text-audio" />
-      </span>
+      <figure className="melody-art" aria-hidden="true">
+        <img
+          src="/illustrations/paper-melody.jpg"
+          alt=""
+          width={1536}
+          height={1024}
+          fetchPriority="high"
+        />
+        <figcaption>
+          A little idea.
+          <br />
+          <em>A new possibility.</em>
+        </figcaption>
+      </figure>
+      <div className="melody-action">
+        <p className="st-eyebrow mb-3">Make room for your next melody</p>
+        <h2 className="text-xl font-medium tracking-tight sm:text-2xl">
+          Drop an audio file, or choose one
+        </h2>
+        <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted-foreground">
+          Works best on a clear single instrument or one melody line. Pick a
+          15–60 second section for the fastest, most accurate draft.
+        </p>
 
-      <h2 className="mt-5 text-xl font-medium tracking-tight sm:text-2xl">
-        Drop an audio file, or choose one
-      </h2>
-      <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted-foreground">
-        Works best on a clear single instrument or one melody line. Pick a 15–60
-        second section for the fastest, most accurate draft.
-      </p>
+        <Button
+          type="button"
+          size="lg"
+          className="mt-7 h-12 rounded-full px-7 text-base"
+          disabled={disabled}
+          onClick={() => inputRef.current?.click()}
+        >
+          Choose an audio file
+        </Button>
 
-      <Button
-        type="button"
-        size="lg"
-        className="mt-7 h-12 rounded-full px-7 text-base"
-        disabled={disabled}
-        onClick={() => inputRef.current?.click()}
-      >
-        Choose an audio file
-      </Button>
+        <ul className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
+          {[
+            ACCEPTED_EXTENSIONS.join(' · '),
+            `up to ${formatBytes(MAX_FILE_BYTES)}`,
+            `up to ${MAX_DURATION_SECONDS / 60} minutes`,
+          ].map((item) => (
+            <li
+              key={item}
+              className="rounded-full bg-surface-strong px-3 py-1 text-xs"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
 
-      <ul className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-        {[
-          ACCEPTED_EXTENSIONS.join(' · '),
-          `up to ${formatBytes(MAX_FILE_BYTES)}`,
-          `up to ${MAX_DURATION_SECONDS / 60} minutes`,
-        ].map((item) => (
-          <li
-            key={item}
-            className="rounded-full bg-surface-strong px-3 py-1 text-xs"
-          >
-            {item}
-          </li>
-        ))}
-      </ul>
-
-      <p className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground">
-        <IconLock className="size-4 shrink-0" />
-        Converted in your browser — your audio is never uploaded, and the export
-        is free.
-      </p>
+        <p className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <IconLock className="size-4 shrink-0" />
+          Converted in your browser — your audio is never uploaded, and the
+          export is free.
+        </p>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { getSocialLinks } from '@/config/social-config';
 import { isLinkActive } from '@/lib/urls';
 import { cn } from '@/lib/utils';
 import Container from '@/components/layout/container';
-import { Logo } from '@/components/shared/logo';
+import { BrandWordmark, Logo } from '@/components/shared/logo';
 import BuiltWithButton from '@/components/shared/built-with-button';
 import { Link, useLocation } from '@tanstack/react-router';
 import { websiteConfig } from '@/config/website';
@@ -21,9 +21,7 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
           <div className="col-span-full flex flex-col items-start md:col-span-2">
             <div className="flex items-center space-x-2">
               <Logo />
-              <span className="text-lg font-medium tracking-tight">
-                {websiteConfig.metadata?.name}
-              </span>
+              <BrandWordmark />
             </div>
             <p className="text-muted-foreground text-base py-2 md:pr-12">
               {messages.footer.tagline}

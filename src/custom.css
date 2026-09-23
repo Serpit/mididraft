@@ -200,3 +200,77 @@ html {
   --pr-head: #7ba5ff;
   --pr-loop: #ff8a4c;
 }
+
+/* Paper collage and the file action form one open editorial composition. */
+.melody-drop {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  overflow: hidden;
+}
+.melody-art {
+  position: relative;
+  margin: 0;
+  min-height: 360px;
+  background: #faf7f1;
+  color: #52443a;
+  pointer-events: none;
+}
+.melody-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  object-position: 36% 50%;
+}
+.melody-art figcaption {
+  position: relative;
+  z-index: 1;
+  padding: 28px;
+  text-align: left;
+  font:
+    25px / 1.15 Georgia,
+    serif;
+  letter-spacing: -0.03em;
+}
+.melody-art figcaption em {
+  color: #936344;
+}
+.melody-action {
+  padding: 36px 28px;
+  align-self: center;
+}
+@media (max-width: 639px) {
+  .melody-drop {
+    display: block;
+  }
+  .melody-art {
+    min-height: 105px;
+    height: 105px;
+  }
+  .melody-art img {
+    object-position: 50% 54%;
+    opacity: 0.85;
+  }
+  .melody-art figcaption {
+    display: none;
+  }
+  .melody-action {
+    padding: 24px 20px;
+  }
+}
+
+/* Custom brand typography; independent of body/UI typography. */
+.brand-wordmark {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.065em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.brand-wordmark span:last-child {
+  font-style: italic;
+  letter-spacing: -0.07em;
+}

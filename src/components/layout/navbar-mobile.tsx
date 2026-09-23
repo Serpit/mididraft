@@ -14,7 +14,7 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { IconChevronRight, IconMenu2, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Logo } from '@/components/shared/logo';
+import { BrandWordmark, Logo } from '@/components/shared/logo';
 import { ModeSwitcherHorizontal } from '@/components/theme/mode-switcher-horizontal';
 import { UserButtonMobile } from '@/components/shared/user-button-mobile';
 import { LoginWrapper } from '@/components/auth/login-wrapper';
@@ -53,9 +53,7 @@ export function NavbarMobile({ className, ...props }: NavbarMobileProps) {
       >
         <Link to="/" className="flex items-center gap-2">
           <Logo />
-          <span className="text-xl font-semibold">
-            {websiteConfig.metadata?.name}
-          </span>
+          <BrandWordmark />
         </Link>
 
         <div className="flex items-center gap-4">

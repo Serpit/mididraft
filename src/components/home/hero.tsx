@@ -28,7 +28,7 @@ export function HeroSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-7 max-w-3xl">
+        <div className="mx-auto mt-7 max-w-5xl">
           <Converter />
         </div>
 

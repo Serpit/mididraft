@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import Container from '@/components/layout/container';
-import { Logo } from '@/components/shared/logo';
+import { BrandWordmark, Logo } from '@/components/shared/logo';
 import { ModeSwitcher } from '@/components/theme/mode-switcher';
 import { NavbarMobile } from '@/components/layout/navbar-mobile';
 import { UserButton } from '@/components/shared/user-button';
@@ -73,9 +73,7 @@ export function Navbar({ scroll = true }: NavbarProps) {
               className="flex items-center gap-2 shrink-0"
             >
               <Logo />
-              <span className="text-lg font-medium tracking-tight">
-                {websiteConfig.metadata?.name}
-              </span>
+              <BrandWordmark />
             </Link>
 
             <NavigationMenu
