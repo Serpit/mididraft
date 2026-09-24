@@ -16,6 +16,8 @@ export interface Guide {
   title: string;
   description: string;
   icon: ComponentType<{ className?: string }>;
+  /** Paper illustration for the /guides hub card, from /illustrations/icons. */
+  art: string;
   /**
    * Last meaningful content change, YYYY-MM-DD. Goes into the sitemap as
    * `lastmod`, so bump it when the guide's text changes — not for a typo.
@@ -32,30 +34,35 @@ export const GUIDES: Guide[] = [
     href: Routes.GuideFlStudio,
     ...m.flStudio,
     icon: IconWaveSine,
+    art: 'blocks',
     updated: '2026-09-24',
   },
   {
     href: Routes.GuideAbleton,
     ...m.ableton,
     icon: IconAdjustmentsBolt,
+    art: 'wave',
     updated: '2026-09-24',
   },
   {
     href: Routes.GuideLogicPro,
     ...m.logicPro,
     icon: IconPiano,
+    art: 'keys',
     updated: '2026-09-24',
   },
   {
     href: Routes.GuideGarageBand,
     ...m.garageBand,
     icon: IconMusic,
+    art: 'headphones',
     updated: '2026-09-24',
   },
   {
     href: Routes.GuideImproveResults,
     ...m.improveResults,
     icon: IconSparkles,
+    art: 'note8',
     updated: '2026-09-24',
   },
 ];

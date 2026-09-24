@@ -33,18 +33,36 @@ function GuidesPage() {
   return (
     <Container className="px-4 py-14">
       <div className="mx-auto max-w-3xl">
-        <p className="st-eyebrow">Guides</p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">
-          Audio to MIDI, in the DAW you already use
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">{description}</p>
-        <p className="mt-4 text-muted-foreground">
+        <div className="grid items-center gap-8 sm:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div>
+            <p className="st-eyebrow">Guides</p>
+            <h1 className="mt-3 text-3xl font-medium tracking-tight sm:text-4xl">
+              Audio to MIDI, in the DAW you already use
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground">{description}</p>
+          </div>
+          <div className="st-card hidden p-2 sm:block">
+            <div className="st-plate aspect-[4/3]">
+              <img
+                src="/illustrations/privacy-local.jpg"
+                alt=""
+                width={960}
+                height={725}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+        <p className="mt-6 text-muted-foreground">
           Each one uses the free{' '}
           <Link to={Routes.Root} className="text-foreground underline">
             audio to MIDI converter
           </Link>{' '}
-          on the homepage for the conversion, then covers the part that differs
-          between DAWs: getting the <code>.mid</code> in at the right tempo.
+          on the homepage for the conversion, which runs in your browser, so the
+          audio never leaves your computer. The guides cover the part that
+          differs between DAWs: getting the <code>.mid</code> in at the right
+          tempo.
         </p>
 
         <ul className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -54,8 +72,16 @@ function GuidesPage() {
                 to={guide.href}
                 className="st-card group flex h-full flex-col p-5 transition-colors hover:border-foreground/30"
               >
-                <guide.icon className="size-5 text-muted-foreground" />
-                <h2 className="mt-3 font-medium">{guide.title}</h2>
+                <img
+                  src={`/illustrations/icons/${guide.art}.webp`}
+                  alt=""
+                  width={56}
+                  height={56}
+                  loading="lazy"
+                  decoding="async"
+                  className="size-14 object-contain object-left transition-transform duration-500 group-hover:-rotate-3 group-hover:scale-105 motion-reduce:transition-none"
+                />
+                <h2 className="mt-4 font-medium">{guide.title}</h2>
                 <p className="mt-1 flex-1 text-sm leading-relaxed text-muted-foreground">
                   {guide.description}
                 </p>

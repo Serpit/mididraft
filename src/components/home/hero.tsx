@@ -1,4 +1,5 @@
 import { Converter } from '@/components/converter/converter';
+import { HeroStage } from '@/components/home/hero-stage';
 import Container from '@/components/layout/container';
 import { productConfig } from '@/config/product';
 import { Routes } from '@/lib/routes';
@@ -17,8 +18,12 @@ import { Link } from '@tanstack/react-router';
  */
 export function HeroSection() {
   return (
-    <section id="converter" className="border-b border-hairline">
-      <Container className="px-4 py-10 sm:py-12">
+    <section
+      id="converter"
+      className="relative isolate overflow-hidden border-b border-hairline"
+    >
+      <HeroStage />
+      <Container className="relative z-10 px-4 py-10 sm:py-12">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-balance text-3xl font-medium tracking-tight sm:text-4xl">
             Audio to MIDI: turn MP3 &amp; WAV into editable MIDI

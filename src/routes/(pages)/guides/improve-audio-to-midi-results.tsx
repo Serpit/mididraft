@@ -1,4 +1,5 @@
 import { GuideLayout } from '@/components/home/guide-layout';
+import { type GuidePlate, GuidePlates } from '@/components/home/guide-plates';
 import { websiteConfig } from '@/config/website';
 import { Routes } from '@/lib/routes';
 import { seo } from '@/lib/seo';
@@ -20,6 +21,65 @@ export const Route = createFileRoute(
     }),
   component: Page,
 });
+
+const INSTRUMENTS: GuidePlate[] = [
+  {
+    title: 'Piano and keys',
+    image: '/illustrations/material-piano.jpg',
+    body: 'One line at a time converts best. The sustain pedal is what costs you: notes ring into each other and re-trigger on the way out.',
+    tip: 'Trim overlaps on; merge repeats 80–150 ms',
+  },
+  {
+    title: 'Guitar',
+    image: '/illustrations/material-guitar.jpg',
+    body: 'Single-note riffs and arpeggios work. Strumming, palm mutes and distortion add notes that were never played, mostly above the real ones.',
+    tip: 'Record DI; narrow the pitch range',
+  },
+  {
+    title: 'Voice and humming',
+    image: '/illustrations/material-voice.jpg',
+    body: 'Steady notes with clear changes work. Slides, breath and vibrato break into short scattered notes between the ones you meant.',
+    tip: 'Remove short notes ≈ 150 ms',
+  },
+  {
+    title: 'Loops and samples',
+    image: '/illustrations/material-loop.jpg',
+    body: 'Take the notes of a loop you like the shape of, then rebuild it with your own sounds rather than keeping the recording.',
+    tip: 'Convert one bar, repeat it in the DAW',
+  },
+];
+
+const WORKFLOW: GuidePlate[] = [
+  {
+    title: 'Convert fifteen seconds first',
+    image: '/illustrations/step-pick.jpg',
+    body: (
+      <>
+        Drag the handles in the{' '}
+        <a href={Routes.Root} className="text-foreground underline">
+          audio to MIDI converter
+        </a>{' '}
+        to a short section, not the whole track. If fifteen seconds are
+        unusable, sixty will be too.
+      </>
+    ),
+  },
+  {
+    title: 'Judge it by ear',
+    image: '/illustrations/step-compare.jpg',
+    body: 'Use the Original / MIDI switch, not the piano roll. A roll that looks busy can sound fine, and vice versa.',
+  },
+  {
+    title: 'Fix detection, then clean up',
+    image: '/illustrations/step-fix.jpg',
+    body: 'Sensitivity, sustain and pitch range first; cleanup second. Cleanup cannot recover a note that was never detected.',
+  },
+  {
+    title: 'Check it in your DAW',
+    image: '/illustrations/step-export.jpg',
+    body: 'Export, then play the MIDI against the original audio there. Problems that were inaudible in a short loop show up quickly.',
+  },
+];
 
 function Page() {
   return (
@@ -54,6 +114,13 @@ function Page() {
           configure around; it is what the technology does.
         </li>
       </ol>
+
+      <h2>Instrument by instrument</h2>
+      <p>
+        Within that first tier, each instrument fails in its own way, and each
+        has one setting that fixes most of it.
+      </p>
+      <GuidePlates items={INSTRUMENTS} />
 
       <h2>Five things that hurt, in order</h2>
 
@@ -138,26 +205,7 @@ function Page() {
       </p>
 
       <h2>A workflow that saves time</h2>
-      <ol>
-        <li>
-          Convert fifteen seconds first in the{' '}
-          <a href={Routes.Root}>audio to MIDI converter</a>, not the whole
-          thing. If fifteen seconds are unusable, sixty will be too.
-        </li>
-        <li>
-          Judge it by ear with the <strong>Original / MIDI</strong> switch, not
-          by looking at the piano roll. A roll that looks busy can sound fine,
-          and vice versa.
-        </li>
-        <li>
-          Fix detection first (sensitivity, sustain, pitch range), cleanup
-          second. Cleanup cannot recover a note that was never detected.
-        </li>
-        <li>
-          Export, open it in your DAW, and play it against the original audio
-          there. Problems that were inaudible in a short loop show up quickly.
-        </li>
-      </ol>
+      <GuidePlates items={WORKFLOW} numbered />
 
       <h2>When to stop</h2>
       <p>
