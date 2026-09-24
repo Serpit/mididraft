@@ -20,6 +20,7 @@ import {
 import { productConfig } from '@/config/product';
 import { websiteConfig } from '@/config/website';
 import { track } from '@/lib/analytics/events';
+import { fireConfetti } from '@/lib/confetti';
 import { offerClock, offerSecondsLeft } from '@/lib/launch-offer';
 import { Routes } from '@/lib/routes';
 
@@ -126,6 +127,13 @@ export function LaunchOfferProvider({
     }),
     [active, seconds]
   );
+  const celebrate = open && active;
+  useEffect(() => {
+    if (!celebrate) return;
+    // Wait for the dialog's zoom-in so the burst lands behind a settled card.
+    const timer = window.setTimeout(() => fireConfetti(), 220);
+    return () => window.clearTimeout(timer);
+  }, [celebrate]);
   const changeOpen = (next: boolean) => {
     setOpen(next);
     if (!next) track('launch_offer_dismiss');
@@ -150,7 +158,9 @@ export function LaunchOfferProvider({
             Get {productConfig.pricing.projectPass.days} days of batch
             conversion to turn your audio clips into editable MIDI drafts.
           </DialogDescription>
-          <div className="launch-offer-price">
+          <div
+            className={`launch-offer-price ${active ? 'is-celebrating' : ''}`}
+          >
             <strong>{active ? PRICE : '$7'}</strong>
             <span>
               USD
