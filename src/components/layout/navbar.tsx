@@ -19,6 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Container from '@/components/layout/container';
 import { BrandWordmark, Logo } from '@/components/shared/logo';
 import { ModeSwitcher } from '@/components/theme/mode-switcher';
+import { NavBadge } from '@/components/layout/nav-badge';
 import { NavbarMobile } from '@/components/layout/navbar-mobile';
 import { UserButton } from '@/components/shared/user-button';
 import { LoginWrapper } from '@/components/auth/login-wrapper';
@@ -157,6 +158,7 @@ export function Navbar({ scroll = true }: NavbarProps) {
                         )}
                       >
                         {item.title}
+                        {item.badge && <NavBadge>{item.badge}</NavBadge>}
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   )

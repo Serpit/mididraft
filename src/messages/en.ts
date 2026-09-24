@@ -28,6 +28,8 @@ export const messages = {
     legal: 'Legal',
     pages: 'Pages',
     batch: {
+      short: 'Batch',
+      badge: 'Pass',
       title: 'Batch converter',
       description: 'Convert a folder of loops in one run',
     },

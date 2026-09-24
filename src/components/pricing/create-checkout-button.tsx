@@ -28,6 +28,100 @@ interface CheckoutButtonProps {
   children?: React.ReactNode;
 }
 
+interface StartCheckoutOptions {
+  planId: string;
+  priceId: string;
+  metadata?: Record<string, string>;
+  launchOffer?: boolean;
+  /** Where the provider sends the buyer back to. Defaults to billing. */
+  successUrl?: string;
+  cancelUrl?: string;
+}
+
+/**
+ * Creates a checkout session and navigates to it. Resolves to false (after
+ * showing a toast) when the session could not be created, so callers can
+ * put their UI back.
+ */
+export async function startCheckout({
+  planId,
+  priceId,
+  metadata,
+  launchOffer,
+  successUrl,
+  cancelUrl,
+}: StartCheckoutOptions): Promise<boolean> {
+  try {
+    if (launchOffer) track('launch_offer_checkout');
+
+    // merge metadata with existing metadata
+    const mergedMetadata = metadata ? { ...metadata } : {};
+
+    // add promotekit_referral to metadata if enabled promotekit affiliate
+    if (
+      websiteConfig.affiliates?.enable &&
+      websiteConfig.affiliates.provider === 'promotekit'
+    ) {
+      const promotekitReferral =
+        typeof window !== 'undefined'
+          ? (window as { promotekit_referral?: string }).promotekit_referral
+          : undefined;
+      if (promotekitReferral) {
+        console.log(
+          'create checkout button, promotekitReferral:',
+          promotekitReferral
+        );
+        mergedMetadata.promotekit_referral = promotekitReferral;
+      }
+    }
+
+    // add affonso_referral to metadata if enabled affonso affiliate
+    if (
+      websiteConfig.affiliates?.enable &&
+      websiteConfig.affiliates.provider === 'affonso'
+    ) {
+      const affonsoReferral =
+        typeof document !== 'undefined'
+          ? (() => {
+              const match = document.cookie.match(
+                /(?:^|; )affonso_referral=([^;]*)/
+              );
+              return match ? decodeURIComponent(match[1]) : null;
+            })()
+          : null;
+      if (affonsoReferral) {
+        console.log(
+          'create checkout button, affonsoReferral:',
+          affonsoReferral
+        );
+        mergedMetadata.affonso_referral = affonsoReferral;
+      }
+    }
+
+    const result = await createCheckoutSession({
+      data: {
+        planId,
+        priceId,
+        launchOffer,
+        successUrl,
+        cancelUrl,
+        metadata:
+          Object.keys(mergedMetadata).length > 0 ? mergedMetadata : undefined,
+      },
+    });
+    if (result?.url) {
+      window.location.href = result.url;
+      return true;
+    }
+    toast.error(m.failed);
+    return false;
+  } catch (err) {
+    console.error('Checkout error:', err);
+    toast.error(err instanceof Error ? err.message : m.failed);
+    return false;
+  }
+}
+
 export function CheckoutButton({
   planId,
   priceId,
@@ -41,74 +135,9 @@ export function CheckoutButton({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
-    try {
-      setIsLoading(true);
-      if (launchOffer) track('launch_offer_checkout');
-
-      // merge metadata with existing metadata
-      const mergedMetadata = metadata ? { ...metadata } : {};
-
-      // add promotekit_referral to metadata if enabled promotekit affiliate
-      if (
-        websiteConfig.affiliates?.enable &&
-        websiteConfig.affiliates.provider === 'promotekit'
-      ) {
-        const promotekitReferral =
-          typeof window !== 'undefined'
-            ? (window as { promotekit_referral?: string }).promotekit_referral
-            : undefined;
-        if (promotekitReferral) {
-          console.log(
-            'create checkout button, promotekitReferral:',
-            promotekitReferral
-          );
-          mergedMetadata.promotekit_referral = promotekitReferral;
-        }
-      }
-
-      // add affonso_referral to metadata if enabled affonso affiliate
-      if (
-        websiteConfig.affiliates?.enable &&
-        websiteConfig.affiliates.provider === 'affonso'
-      ) {
-        const affonsoReferral =
-          typeof document !== 'undefined'
-            ? (() => {
-                const match = document.cookie.match(
-                  /(?:^|; )affonso_referral=([^;]*)/
-                );
-                return match ? decodeURIComponent(match[1]) : null;
-              })()
-            : null;
-        if (affonsoReferral) {
-          console.log(
-            'create checkout button, affonsoReferral:',
-            affonsoReferral
-          );
-          mergedMetadata.affonso_referral = affonsoReferral;
-        }
-      }
-
-      const result = await createCheckoutSession({
-        data: {
-          planId,
-          priceId,
-          launchOffer,
-          metadata:
-            Object.keys(mergedMetadata).length > 0 ? mergedMetadata : undefined,
-        },
-      });
-      if (result?.url) {
-        window.location.href = result.url;
-      } else {
-        toast.error(m.failed);
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      toast.error(err instanceof Error ? err.message : m.failed);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    await startCheckout({ planId, priceId, metadata, launchOffer });
+    setIsLoading(false);
   };
 
   return (

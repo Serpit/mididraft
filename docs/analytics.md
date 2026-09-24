@@ -46,6 +46,12 @@ Keep that true when adding events.
 | `ab_compared` | Both sources played, per file | — |
 | `settings_adjusted` | First change in a settings group, per file | `setting_group` |
 | `midi_download` | MIDI downloaded | `input_source`, `segment_length`, `cleanup_active`, `bpm_edited`, `file_index` |
+| `multi_file_drop` | Several files dropped or chosen on the homepage | `file_count` |
+| `batch_entry` | In-product link to the batch page followed | `surface` (`multi_drop`, `waiting_banner`, `post_download`, `dropzone_hint`) |
+| `batch_page_view` | Batch page opened | `entry` (a `batch_entry` surface, `direct` for nav/footer/search, `resume`), `plan_id` |
+| `batch_paywall_view` | Unlock panel shown with files queued (once per visit) | `file_count`, `offer` |
+| `batch_unlock_click` | Unlock button pressed | `signed_in`, `offer`, `file_count` |
+| `batch_resume` | Batch saved before sign-in/checkout brought back | `reason` (`login`, `paid`, `cancel`, `return`), `restored` (`files`, `names`, `none`) |
 
 ## GA4 configuration
 

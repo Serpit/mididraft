@@ -18,6 +18,7 @@ import { BrandWordmark, Logo } from '@/components/shared/logo';
 import { ModeSwitcherHorizontal } from '@/components/theme/mode-switcher-horizontal';
 import { UserButtonMobile } from '@/components/shared/user-button-mobile';
 import { LoginWrapper } from '@/components/auth/login-wrapper';
+import { NavBadge } from '@/components/layout/nav-badge';
 import { messages } from '@/messages';
 import { websiteConfig } from '@/config/website';
 
@@ -180,6 +181,7 @@ export function NavbarMobile({ className, ...props }: NavbarMobileProps) {
                         )}
                       >
                         {item.title}
+                        {item.badge && <NavBadge>{item.badge}</NavBadge>}
                       </Link>
                     )}
                   </li>

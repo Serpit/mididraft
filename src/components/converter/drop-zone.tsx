@@ -5,12 +5,17 @@ import {
   MAX_FILE_BYTES,
   formatBytes,
 } from '@/lib/midi/audio';
+import { handOffToBatch } from '@/lib/midi/batch-handoff';
+import { Routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { IconLock } from '@tabler/icons-react';
+import { Link } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 
 interface DropZoneProps {
   onFile: (file: File) => void;
+  /** Called instead of `onFile` when more than one file arrives at once. */
+  onFiles?: (files: File[]) => void;
   disabled?: boolean;
 }
 
@@ -21,13 +26,17 @@ interface DropZoneProps {
  * it at all: it is free, it stays on your machine, and these are the formats.
  * Everything else about the tool is further down the page where it belongs.
  */
-export function DropZone({ onFile, disabled }: DropZoneProps) {
+export function DropZone({ onFile, onFiles, disabled }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
-  const handleFiles = (files: FileList | null) => {
-    const file = files?.[0];
-    if (file) onFile(file);
+  const handleFiles = (list: FileList | null) => {
+    const files = Array.from(list ?? []);
+    if (files.length > 1 && onFiles) {
+      onFiles(files);
+    } else if (files[0]) {
+      onFile(files[0]);
+    }
   };
 
   return (
@@ -52,6 +61,7 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
         ref={inputRef}
         type="file"
         accept={ACCEPTED_EXTENSIONS.join(',')}
+        multiple={!!onFiles}
         className="sr-only"
         disabled={disabled}
         onChange={(event) => {
@@ -115,6 +125,22 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
           Converted in your browser — your audio is never uploaded, and the
           export is free.
         </p>
+
+        {onFiles && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            A folder of clips? Drop them all at once, or{' '}
+            <Link
+              to={Routes.BatchAudioToMidi}
+              className="underline underline-offset-4 hover:text-foreground"
+              onClick={() =>
+                handOffToBatch({ entry: 'dropzone_hint', files: [] })
+              }
+            >
+              open the batch converter
+            </Link>
+            .
+          </p>
+        )}
       </div>
     </div>
   );

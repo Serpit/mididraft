@@ -25,7 +25,7 @@ import { offerClock, offerSecondsLeft } from '@/lib/launch-offer';
 import { Routes } from '@/lib/routes';
 
 const campaign = productConfig.launchOffer;
-const PRICE = `$${campaign.amountUsd.toFixed(2)}`;
+export const LAUNCH_PRICE = `$${campaign.amountUsd.toFixed(2)}`;
 const DISPLAY_KEY = `mididraft:${campaign.campaign}:shown`;
 const enabled =
   campaign.enabled &&
@@ -34,6 +34,8 @@ const enabled =
   websiteConfig.payment.provider === 'waffo';
 const OfferContext = createContext({
   active: false,
+  /** False until the offer lookup has answered, or when there is no offer. */
+  settled: !enabled,
   seconds: 0,
   showOffer: () => {},
 });
@@ -119,13 +121,14 @@ export function LaunchOfferProvider({
   const context = useMemo(
     () => ({
       active,
+      settled: !enabled || query.isFetched,
       seconds,
       showOffer: () => {
         setOpen(true);
         track('launch_offer_view', { surface: 'popup' });
       },
     }),
-    [active, seconds]
+    [active, query.isFetched, seconds]
   );
   const celebrate = open && active;
   useEffect(() => {
@@ -161,7 +164,7 @@ export function LaunchOfferProvider({
           <div
             className={`launch-offer-price ${active ? 'is-celebrating' : ''}`}
           >
-            <strong>{active ? PRICE : '$7'}</strong>
+            <strong>{active ? LAUNCH_PRICE : '$7'}</strong>
             <span>
               USD
               <br />
@@ -190,7 +193,7 @@ export function LaunchOfferProvider({
               <p>
                 <span className="launch-offer-dot" />
                 {seconds < 3600
-                  ? `Last hour for your ${PRICE} offer`
+                  ? `Last hour for your ${LAUNCH_PRICE} offer`
                   : 'Your offer expires in'}
               </p>
               <div
@@ -234,7 +237,9 @@ export function LaunchOfferProvider({
 
 function LaunchOfferAction({ active }: { active: boolean }) {
   const { data: session } = authClient.useSession();
-  const label = active ? `Get 7 days for ${PRICE}` : 'View standard pricing';
+  const label = active
+    ? `Get 7 days for ${LAUNCH_PRICE}`
+    : 'View standard pricing';
   if (!active || !session?.user) {
     return (
       <a
@@ -274,7 +279,7 @@ export function LaunchOfferBanner() {
       {active && (
         <div className="launch-offer-banner">
           <span>
-            <strong>Launch offer</strong> · 7 days for {PRICE}
+            <strong>Launch offer</strong> · 7 days for {LAUNCH_PRICE}
           </span>
           <span className="launch-offer-banner-clock">
             <IconClock size={15} aria-hidden="true" />

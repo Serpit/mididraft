@@ -106,7 +106,11 @@ export function LoginForm({
     <AuthCard
       headerLabel={m.welcomeBack}
       bottomButtonLabel={m.signUpHint}
-      bottomButtonHref={Routes.Register}
+      bottomButtonHref={
+        callbackUrl === defaultCallbackUrl
+          ? Routes.Register
+          : `${Routes.Register}?callbackUrl=${encodeURIComponent(callbackUrl)}`
+      }
       className={cn('', className)}
     >
       {credentialLoginEnabled && (

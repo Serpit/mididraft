@@ -38,6 +38,15 @@ export type SettingGroup = 'detection' | 'cleanup' | 'tempo';
 
 export type BatchStatus = 'completed' | 'partial' | 'failed';
 
+export type BatchEntrySurface =
+  | 'multi_drop'
+  | 'waiting_banner'
+  | 'post_download'
+  | 'dropzone_hint';
+
+/** Why a saved batch came back; `return` means a later visit. */
+export type BatchResumeReason = 'login' | 'paid' | 'cancel' | 'return';
+
 /** Every event the site sends, and the parameters each one carries. */
 export interface AnalyticsEvents {
   launch_offer_view: { surface: 'banner' | 'popup' };
@@ -97,6 +106,28 @@ export interface AnalyticsEvents {
     duration_ms: number;
     status: BatchStatus;
     plan_id: string;
+  };
+  /** More than one file was dropped or chosen on the single-file converter. */
+  multi_file_drop: { file_count: number };
+  /** A visitor followed an in-product link to the batch page. */
+  batch_entry: { surface: BatchEntrySurface };
+  /** The batch page opened. `direct` covers nav, footer and search. */
+  batch_page_view: {
+    entry: BatchEntrySurface | 'direct' | 'resume';
+    plan_id: string;
+  };
+  /** A visitor without batch access saw the unlock panel with files queued. */
+  batch_paywall_view: { file_count: number; offer: 'yes' | 'no' };
+  /** The unlock button was pressed. */
+  batch_unlock_click: {
+    signed_in: 'yes' | 'no';
+    offer: 'yes' | 'no';
+    file_count: number;
+  };
+  /** A batch saved before sign-in or checkout was brought back. */
+  batch_resume: {
+    reason: BatchResumeReason;
+    restored: 'files' | 'names' | 'none';
   };
   /** The ZIP was downloaded after a batch. */
   batch_download: {

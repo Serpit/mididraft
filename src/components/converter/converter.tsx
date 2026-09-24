@@ -1,3 +1,4 @@
+import { BatchTray } from '@/components/converter/batch-tray';
 import { DropZone } from '@/components/converter/drop-zone';
 import { PianoRoll } from '@/components/converter/piano-roll';
 import { PresetControls } from '@/components/converter/preset-controls';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useCurrentPlan } from '@/hooks/use-payment';
 import {
+  ACCEPTED_EXTENSIONS,
   AudioError,
   MAX_DURATION_SECONDS,
   buildWaveformPeaks,
@@ -28,10 +30,12 @@ import {
   pitchToName,
 } from '@/lib/midi/types';
 import type { CleanupOptions, Note, TranscribeOptions } from '@/lib/midi/types';
+import { handOffToBatch } from '@/lib/midi/batch-handoff';
 import { EXAMPLES } from '@/lib/midi/examples';
 import { fileExtension, lengthBucket, track } from '@/lib/analytics/events';
 import type {
   AnalyzeErrorReason,
+  BatchEntrySurface,
   InputSource,
   RejectReason,
   SettingGroup,
@@ -40,12 +44,13 @@ import { Routes } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import {
   IconAlertTriangle,
+  IconArrowRight,
   IconChevronDown,
   IconDownload,
   IconRefresh,
   IconX,
 } from '@tabler/icons-react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /** Longest slice we hand to the model in one run. */
@@ -82,14 +87,36 @@ function rejectReason(caught: unknown): RejectReason {
   return 'decode_failed';
 }
 
+const BATCH_NUDGE_KEY = 'mididraft:batch-nudge-shown';
+
+/** The post-download batch suggestion appears once per browser session. */
+function claimBatchNudge(): boolean {
+  try {
+    if (sessionStorage.getItem(BATCH_NUDGE_KEY)) return false;
+    sessionStorage.setItem(BATCH_NUDGE_KEY, '1');
+  } catch {
+    /* no storage: show it, at worst once per page visit */
+  }
+  return true;
+}
+
+function isAccepted(file: File) {
+  const name = file.name.toLowerCase();
+  return ACCEPTED_EXTENSIONS.some((ext) => name.endsWith(ext));
+}
+
 function analyzeErrorReason(caught: unknown): AnalyzeErrorReason {
   const code = caught instanceof AudioError ? caught.code : undefined;
   return ANALYZE_ERROR_REASONS.find((reason) => reason === code) ?? 'unknown';
 }
 
 export function Converter({ className }: { className?: string }) {
-  const { hasPresetAccess } = useCurrentPlan();
+  const { hasPresetAccess, hasBatchAccess } = useCurrentPlan();
+  const navigate = useNavigate();
   const [stage, setStage] = useState<Stage>('idle');
+  /** Every file from a multi-file drop, kept for the batch converter. */
+  const [tray, setTray] = useState<File[]>([]);
+  const [batchNudge, setBatchNudge] = useState(false);
   const [audio, setAudio] = useState<LoadedAudio | null>(null);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
   const [progress, setProgress] = useState(0);
@@ -218,6 +245,7 @@ export function Converter({ className }: { className?: string }) {
     setError(null);
     setProgress(0);
     setAdjustOpen(false);
+    setBatchNudge(false);
   }, []);
 
   const runAnalysis = useCallback(
@@ -382,6 +410,34 @@ export function Converter({ className }: { className?: string }) {
     [loadBuffer, resetAll]
   );
 
+  const handleFiles = useCallback(
+    (files: File[]) => {
+      track('multi_file_drop', { file_count: files.length });
+      const accepted = files.filter(isAccepted);
+      // None usable: the single-file path explains the format problem.
+      if (accepted.length <= 1) {
+        void handleFile(accepted[0] ?? files[0]!);
+        return;
+      }
+      setTray(accepted);
+    },
+    [handleFile]
+  );
+
+  const goToBatch = useCallback(
+    (entry: BatchEntrySurface, files: File[], carrySettings: boolean) => {
+      handOffToBatch({
+        entry,
+        files,
+        settings: carrySettings
+          ? { transcribe: detection, cleanup, bpm }
+          : undefined,
+      });
+      void navigate({ to: Routes.BatchAudioToMidi });
+    },
+    [bpm, cleanup, detection, navigate]
+  );
+
   const handleExample = useCallback(
     async (url: string, name: string) => {
       resetAll();
@@ -492,7 +548,8 @@ export function Converter({ className }: { className?: string }) {
       bpm_edited: bpmTouched ? 'yes' : 'no',
       file_index: filesLoadedRef.current,
     });
-  }, [audio, bpm, bpmTouched, cleanupActive, notes]);
+    if (tray.length <= 1 && claimBatchNudge()) setBatchNudge(true);
+  }, [audio, bpm, bpmTouched, cleanupActive, notes, tray.length]);
 
   const busy = stage === 'decoding' || stage === 'analyzing';
   const segmentSeconds = selection.end - selection.start;
@@ -521,9 +578,37 @@ export function Converter({ className }: { className?: string }) {
         </div>
       )}
 
-      {!audio && !busy && (
+      {!audio && !busy && tray.length > 1 && (
+        <BatchTray
+          files={tray}
+          hasBatchAccess={hasBatchAccess}
+          onBatch={() => goToBatch('multi_drop', tray, false)}
+          onConvertFirst={() => void handleFile(tray[0]!)}
+          onClear={() => setTray([])}
+        />
+      )}
+
+      {audio && tray.length > 1 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hairline bg-surface px-5 py-3">
+          <p className="text-sm">
+            {tray.length - 1} more clip{tray.length === 2 ? '' : 's'} from your
+            drop {tray.length === 2 ? 'is' : 'are'} waiting.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 rounded-full"
+            onClick={() => goToBatch('waiting_banner', tray, true)}
+          >
+            Batch convert all {tray.length}
+            <IconArrowRight className="ml-1.5 size-4" />
+          </Button>
+        </div>
+      )}
+
+      {!audio && !busy && tray.length <= 1 && (
         <>
-          <DropZone onFile={handleFile} disabled={busy} />
+          <DropZone onFile={handleFile} onFiles={handleFiles} disabled={busy} />
 
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-sm text-muted-foreground">
@@ -740,6 +825,24 @@ export function Converter({ className }: { className?: string }) {
                   </div>
                 )}
               </div>
+
+              {batchNudge && (
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline px-5 py-3">
+                  <p className="text-sm text-muted-foreground">
+                    More clips like this one? Run a whole folder through these
+                    same settings.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-10 rounded-full"
+                    onClick={() => goToBatch('post_download', [], true)}
+                  >
+                    Batch convert
+                    <IconArrowRight className="ml-1.5 size-4" />
+                  </Button>
+                </div>
+              )}
 
               {/*
                * The two things a first-time visitor came for, side by side,
