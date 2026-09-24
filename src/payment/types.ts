@@ -125,6 +125,8 @@ export interface CreateCheckoutParams {
   cancelUrl?: string;
   metadata?: Record<string, string>;
   locale?: string;
+  /** Server-authorized first-purchase offer; never populated from metadata. */
+  launchOffer?: { amountUsd: number; expiresAt: number; idempotencyKey: string };
 }
 
 /**

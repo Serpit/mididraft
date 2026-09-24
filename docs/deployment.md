@@ -28,8 +28,9 @@ The GitHub Actions workflow is a manual fallback and requires its own repository
 secrets; it does not run on pushes to avoid duplicate deployments.
 
 The production D1 database and custom domain are defined in `wrangler.jsonc`.
-Migrations 0000–0003 were applied at launch and 0004 (`cleanup_presets`) with
-the paid launch, all recorded in `d1_migrations`. Apply new ones with
+Migrations 0000–0003 were applied at launch, 0004 (`cleanup_presets`) with
+the paid launch and 0005 (`launch_offer`) with the first-purchase offer, all
+recorded in `d1_migrations`. Apply new ones with
 `pnpm exec wrangler d1 migrations apply mididraft --remote` (wrangler must be
 logged in to the account above).
 

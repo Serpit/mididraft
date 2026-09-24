@@ -1,5 +1,7 @@
 import { getDb } from '@/db';
-import { payment } from '@/db/app.schema';
+import { launchOffer, payment } from '@/db/app.schema';
+import { productConfig } from '@/config/product';
+import { resolveLaunchOffer } from '@/lib/launch-offer.server';
 import { user } from '@/db/auth.schema';
 import { websiteConfig } from '@/config/website';
 import { resolveUserPlan } from '@/lib/plan-resolver';
@@ -7,7 +9,7 @@ import { getBaseUrl } from '@/lib/urls';
 import { authApiMiddleware } from '@/middlewares/auth-middleware';
 import { createCheckout, createCustomerPortal } from '@/payment';
 import { createServerFn } from '@tanstack/react-start';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull, lte, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({
@@ -16,6 +18,7 @@ const checkoutSchema = z.object({
   successUrl: z.url().optional(),
   cancelUrl: z.url().optional(),
   metadata: z.record(z.string(), z.string()).optional(),
+  launchOffer: z.boolean().optional(),
 });
 
 export const createCheckoutSession = createServerFn({ method: 'POST' })
@@ -31,6 +34,67 @@ export const createCheckoutSession = createServerFn({ method: 'POST' })
       .limit(1);
     if (!userRow?.email) throw new Error('User email not found');
     const { planId, priceId, successUrl, cancelUrl, metadata } = data;
+    const plan = websiteConfig.payment?.price?.plans[planId];
+    if (
+      !productConfig.features.paidPlans ||
+      !websiteConfig.payment?.enable ||
+      !plan ||
+      plan.disabled ||
+      plan.isFree ||
+      !plan.prices.some((price) => price.priceId === priceId && !price.disabled)
+    ) {
+      throw new Error('This plan is not available.');
+    }
+    const offer = data.launchOffer ? await resolveLaunchOffer(userId) : null;
+    if (
+      data.launchOffer &&
+      (planId !== 'pass' || !offer || offer.expiresAt <= Date.now())
+    ) {
+      throw new Error(
+        'This offer has ended or is unavailable. Refresh to see current pricing.'
+      );
+    }
+    if (
+      offer?.checkoutUrl &&
+      offer.checkoutId &&
+      (offer.checkoutExpiresAt ?? 0) > Date.now()
+    ) {
+      return { url: offer.checkoutUrl, id: offer.checkoutId };
+    }
+    // One live discounted checkout per account, including simultaneous tabs.
+    let checkoutExpiresAt = offer
+      ? Math.min(offer.expiresAt, Date.now() + 45 * 60 * 1000)
+      : undefined;
+    if (offer) {
+      const locked = await db
+        .update(launchOffer)
+        .set({
+          checkoutExpiresAt,
+          checkoutId: null,
+          checkoutUrl: null,
+        })
+        .where(
+          and(
+            eq(launchOffer.id, offer.id),
+            or(
+              isNull(launchOffer.checkoutExpiresAt),
+              lte(launchOffer.checkoutExpiresAt, Date.now())
+            )
+          )
+        )
+        .returning({ id: launchOffer.id });
+      if (!locked.length) {
+        const [pending] = await db
+          .select()
+          .from(launchOffer)
+          .where(eq(launchOffer.id, offer.id))
+          .limit(1);
+        checkoutExpiresAt = pending?.checkoutExpiresAt ?? undefined;
+        if (!checkoutExpiresAt || checkoutExpiresAt <= Date.now()) {
+          throw new Error('Please try checkout again.');
+        }
+      }
+    }
     const baseUrl = getBaseUrl();
     const isStripe = websiteConfig.payment?.provider === 'stripe';
     const cancel = cancelUrl ?? `${baseUrl}/settings/billing`;
@@ -47,6 +111,7 @@ export const createCheckoutSession = createServerFn({ method: 'POST' })
       ...metadata,
       userId,
       userName: userRow.name ?? '',
+      ...(offer && { campaign: productConfig.launchOffer.campaign }),
     };
 
     const result = await createCheckout({
@@ -56,7 +121,32 @@ export const createCheckoutSession = createServerFn({ method: 'POST' })
       successUrl: success,
       cancelUrl: cancel,
       metadata: checkoutMetadata,
+      ...(offer && {
+        launchOffer: {
+          amountUsd: productConfig.launchOffer.amountUsd,
+          expiresAt: checkoutExpiresAt!,
+          idempotencyKey: `launch-${Array.from(
+            new Uint8Array(
+              await crypto.subtle.digest(
+                'SHA-256',
+                new TextEncoder().encode(`${offer.id}:${checkoutExpiresAt}`)
+              )
+            )
+          )
+            .map((byte) => byte.toString(16).padStart(2, '0'))
+            .join('')}`,
+        },
+      }),
     });
+    if (offer) {
+      await db
+        .update(launchOffer)
+        .set({
+          checkoutId: result.id,
+          checkoutUrl: result.url,
+        })
+        .where(eq(launchOffer.id, offer.id));
+    }
     return { url: result.url, id: result.id };
   });
 

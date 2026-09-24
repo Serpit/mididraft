@@ -1,3 +1,4 @@
+import { LaunchOfferBanner } from '@/components/pricing/launch-offer';
 import { getNavbarLinks } from '@/config/navbar-config';
 import { useScroll } from '@/hooks/use-scroll';
 import { authClient } from '@/auth/client';
@@ -62,6 +63,7 @@ export function Navbar({ scroll = true }: NavbarProps) {
         aria-hidden="true"
       />
       <div className="relative z-10">
+        <LaunchOfferBanner />
         <Container className="px-4">
           <nav
             aria-label="Main navigation"

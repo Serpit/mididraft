@@ -1,3 +1,4 @@
+import { track } from '@/lib/analytics/events';
 import { createCheckoutSession } from '@/api/payment';
 import { Button } from '@/components/ui/button';
 import { websiteConfig } from '@/config/website';
@@ -13,6 +14,7 @@ interface CheckoutButtonProps {
   planId: string;
   priceId: string;
   metadata?: Record<string, string>;
+  launchOffer?: boolean;
   variant?:
     | 'default'
     | 'outline'
@@ -30,6 +32,7 @@ export function CheckoutButton({
   planId,
   priceId,
   metadata,
+  launchOffer,
   variant = 'default',
   size = 'default',
   className,
@@ -40,6 +43,7 @@ export function CheckoutButton({
   const handleClick = async () => {
     try {
       setIsLoading(true);
+      if (launchOffer) track('launch_offer_checkout');
 
       // merge metadata with existing metadata
       const mergedMetadata = metadata ? { ...metadata } : {};
@@ -89,6 +93,7 @@ export function CheckoutButton({
         data: {
           planId,
           priceId,
+          launchOffer,
           metadata:
             Object.keys(mergedMetadata).length > 0 ? mergedMetadata : undefined,
         },
@@ -100,7 +105,7 @@ export function CheckoutButton({
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      toast.error(m.failed);
+      toast.error(err instanceof Error ? err.message : m.failed);
     } finally {
       setIsLoading(false);
     }

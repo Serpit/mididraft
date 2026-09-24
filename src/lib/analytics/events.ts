@@ -40,6 +40,10 @@ export type BatchStatus = 'completed' | 'partial' | 'failed';
 
 /** Every event the site sends, and the parameters each one carries. */
 export interface AnalyticsEvents {
+  launch_offer_view: { surface: 'banner' | 'popup' };
+  launch_offer_dismiss: Record<string, never>;
+  launch_offer_click: { surface: 'popup' | 'pricing' };
+  launch_offer_checkout: Record<string, never>;
   /** A file decoded and passed the length check. */
   file_loaded: {
     input_source: InputSource;

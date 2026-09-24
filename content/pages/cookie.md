@@ -1,10 +1,10 @@
 ---
 title: Cookie Policy
 description: The cookies MidiDraft sets, and why
-date: 2026-09-23
+date: 2026-09-24
 ---
 
-**Last updated: 23 September 2026**
+**Last updated: 24 September 2026**
 
 This page lists what MidiDraft stores in your browser and why.
 
@@ -18,6 +18,18 @@ it.
 | Sign-in session | A session token, if you have an account and are signed in | Until you sign out, or the session expires |
 | Security | A token used to protect form submissions | Session |
 | Theme | Whether you chose light or dark mode | Persistent, on your device only |
+
+## First-purchase offer
+
+When the launch offer is shown, `mididraft_launch_visitor` stores a random
+first-party visitor identifier for up to one year. This keeps the offer's
+24-hour deadline consistent when you refresh or return. The deadline is stored
+on our server and linked to your account when you sign in.
+
+A local-storage entry named `mididraft:first-project-v1:shown` remembers the
+last day the popup was shown, so it does not interrupt you repeatedly. It stays
+on your device until you clear site storage. Neither entry contains audio or
+MIDI data or tracks you across other websites.
 
 ## Analytics
 

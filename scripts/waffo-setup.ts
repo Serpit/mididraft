@@ -58,7 +58,7 @@ const client = new WaffoPancake({ merchantId, privateKey });
 const { pricing } = productConfig;
 
 interface ProductSpec {
-  key: 'projectPass' | 'proMonthly';
+  key: 'projectPass' | 'projectPassLaunch' | 'proMonthly';
   type: 'onetime' | 'subscription';
   name: string;
   description: string;
@@ -74,6 +74,17 @@ const PRODUCTS: ProductSpec[] = [
     description: `${pricing.projectPass.days} days of batch conversion and cleanup presets. One payment, does not renew.`,
     amount: pricing.projectPass.amountUsd.toFixed(2),
     metadata: { sku: 'project-pass', accessDays: pricing.projectPass.days },
+  },
+  {
+    key: 'projectPassLaunch',
+    type: 'onetime',
+    name: 'MidiDraft Project Pass — Launch Offer',
+    description: `${pricing.projectPass.days} days of batch conversion and cleanup presets. One payment, does not renew.`,
+    amount: productConfig.launchOffer.amountUsd.toFixed(2),
+    metadata: {
+      sku: 'project-pass-launch',
+      accessDays: pricing.projectPass.days,
+    },
   },
   {
     key: 'proMonthly',

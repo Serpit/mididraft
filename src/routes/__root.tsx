@@ -1,3 +1,4 @@
+import { LaunchOfferProvider } from '@/components/pricing/launch-offer';
 import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
@@ -125,13 +126,15 @@ function RootComponent() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar scroll />
-      <main id="main-content" className="flex-1">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <LaunchOfferProvider>
+      <div className="flex min-h-screen flex-col">
+        <Navbar scroll />
+        <main id="main-content" className="flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </LaunchOfferProvider>
   );
 }
 

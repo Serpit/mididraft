@@ -1,3 +1,4 @@
+import { productConfig } from '@/config/product';
 import { websiteConfig } from '@/config/website';
 import type { Price, PricePlan } from '@/payment/types';
 
@@ -30,6 +31,9 @@ export function findPlanByPlanId(planId: string): PricePlan | undefined {
  */
 export function findPlanByPriceId(priceId: string): PricePlan | undefined {
   const plans = getAllPricePlans();
+  if (priceId === productConfig.waffo.products.projectPassLaunch) {
+    return plans.find((plan) => plan.id === 'pass');
+  }
   for (const plan of plans) {
     const matchingPrice = plan.prices.find((p) => p.priceId === priceId);
     if (matchingPrice) return plan;

@@ -52,6 +52,15 @@ export const paymentRelations = relations(payment, ({ one }) => ({
   user: one(user, { fields: [payment.userId], references: [user.id] }),
 }));
 
+/** Immutable visitor/account deadlines, plus a reusable checkout per account. */
+export const launchOffer = sqliteTable('launch_offer', {
+  id: text('id').primaryKey(),
+  expiresAt: integer('expires_at').notNull(),
+  checkoutId: text('checkout_id'),
+  checkoutUrl: text('checkout_url'),
+  checkoutExpiresAt: integer('checkout_expires_at'),
+});
+
 /**
  * User files
  * metadata for files uploaded to R2 (path userfiles/{userId}/xxx);

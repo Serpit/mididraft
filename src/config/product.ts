@@ -52,6 +52,13 @@ export const productConfig = {
     proYearly: { amountUsd: 89, interval: 'year' as const },
   },
 
+  launchOffer: {
+    enabled: true,
+    campaign: 'first-project-v1',
+    amountUsd: 4.9,
+    durationHours: 24,
+  },
+
   /**
    * Waffo Pancake catalog, created by `pnpm waffo:setup` from the prices
    * above. IDs are the same in test and production (`--publish` promotes a
@@ -62,6 +69,7 @@ export const productConfig = {
     storeId: 'STO_4DcF8oeIBxozuUSZnXJzKc',
     products: {
       projectPass: 'PROD_4mjEIED8OR0scVKVPp3UhU',
+      projectPassLaunch: 'PROD_47SW5UfkLywWmBOHRjMspD',
       proMonthly: 'PROD_0iN8Czds7gZazcWmR3n4hc',
     },
   },

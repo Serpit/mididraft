@@ -70,17 +70,34 @@ export class WaffoProvider implements PaymentProvider {
   }
 
   async createCheckout(params: CreateCheckoutParams): Promise<CheckoutResult> {
-    const session = await this.client.checkout.createSession({
-      productId: params.priceId,
-      currency: 'USD',
-      buyerEmail: params.customerEmail,
-      successUrl: params.successUrl,
-      metadata: {
-        ...params.metadata,
-        planId: params.planId,
-        priceId: params.priceId,
+    const remaining = params.launchOffer
+      ? Math.floor((params.launchOffer.expiresAt - Date.now()) / 1000)
+      : undefined;
+    if (remaining !== undefined && remaining < 1) {
+      throw new Error('Your launch offer has expired.');
+    }
+    const checkoutPriceId = params.launchOffer
+      ? productConfig.waffo.products.projectPassLaunch
+      : params.priceId;
+    const session = await this.client.checkout.createSession(
+      {
+        productId: checkoutPriceId,
+        currency: 'USD',
+        buyerEmail: params.customerEmail,
+        successUrl: params.successUrl,
+        ...(params.launchOffer && {
+          expiresInSeconds: Math.min(45 * 60, remaining!),
+        }),
+        metadata: {
+          ...params.metadata,
+          planId: params.planId,
+          priceId: checkoutPriceId,
+        },
       },
-    });
+      params.launchOffer
+        ? { idempotencyKey: params.launchOffer.idempotencyKey }
+        : undefined
+    );
     return { url: session.checkoutUrl, id: session.sessionId };
   }
 
@@ -152,7 +169,10 @@ export class WaffoProvider implements PaymentProvider {
   private async onOrderCompleted(event: Event): Promise<void> {
     const { data } = event;
     const priceId = this.resolvePriceId(event);
-    if (priceId !== productConfig.waffo.products.projectPass) {
+    if (
+      priceId !== productConfig.waffo.products.projectPass &&
+      priceId !== productConfig.waffo.products.projectPassLaunch
+    ) {
       console.warn(`<< Waffo order for unknown product ${data.productName}`);
       return;
     }
@@ -326,6 +346,7 @@ export class WaffoProvider implements PaymentProvider {
     const sku = event.data.productMetadata?.sku;
     const { products } = productConfig.waffo;
     if (sku === 'project-pass') return products.projectPass;
+    if (sku === 'project-pass-launch') return products.projectPassLaunch;
     if (sku === 'pro-monthly') return products.proMonthly;
     return undefined;
   }

@@ -1,3 +1,4 @@
+import { useLaunchOffer } from '@/components/pricing/launch-offer';
 import { authClient } from '@/auth/client';
 import { FaqSection } from '@/components/home/faq';
 import { CheckoutButton } from '@/components/pricing/create-checkout-button';
@@ -75,6 +76,7 @@ const PLANS: Plan[] = [
 ];
 
 function PricingPage() {
+  const offer = useLaunchOffer();
   return (
     <Container className="px-4 py-16">
       <div className="mx-auto max-w-3xl space-y-4 text-center">
@@ -100,13 +102,21 @@ function PricingPage() {
 
             <div className="mt-4 flex items-baseline gap-1.5">
               <span className="text-3xl font-bold tabular-nums">
-                {plan.price}
+                {plan.id === 'pass' && offer.active
+                  ? `$${productConfig.launchOffer.amountUsd.toFixed(2)}`
+                  : plan.price}
               </span>
               <span className="text-sm text-muted-foreground">
                 {plan.cadence}
               </span>
             </div>
 
+            {plan.id === 'pass' && offer.active && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                First-purchase offer · Standard price $7. Offer ends in the
+                timer above.
+              </p>
+            )}
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {plan.description}
             </p>
@@ -211,6 +221,8 @@ function PricingPage() {
  * attached. Signed-out visitors go to login and come back here.
  */
 function PaidPlanAction({ planId }: { planId: string }) {
+  const offer = useLaunchOffer();
+  const discounted = planId === 'pass' && offer.active;
   const { data: session, isPending } = authClient.useSession();
   const priceId =
     websiteConfig.payment?.price?.plans[planId]?.prices[0]?.priceId ?? '';
@@ -233,8 +245,15 @@ function PaidPlanAction({ planId }: { planId: string }) {
     );
   }
   return (
-    <CheckoutButton planId={planId} priceId={priceId} className="w-full">
-      Get started
+    <CheckoutButton
+      planId={planId}
+      priceId={priceId}
+      launchOffer={discounted}
+      className="w-full"
+    >
+      {discounted
+        ? `Get 7 days for $${productConfig.launchOffer.amountUsd.toFixed(2)}`
+        : 'Get started'}
     </CheckoutButton>
   );
 }
