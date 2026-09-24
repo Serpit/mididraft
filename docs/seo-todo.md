@@ -31,7 +31,7 @@
 - [ ] 接入 Bing Webmaster Tools + IndexNow（Cloudflare Crawler Hints）
   - [x] IndexNow key 文件 + `pnpm indexnow`（部署后运行）
   - [x] Bing Webmaster 从 GSC 导入站点（2026-09-24）
-  - [ ] Bing 里提交 `https://mididraft.com/sitemap.xml`（导入后 Sitemaps 列表为空）
+  - [x] Bing 里提交 `https://mididraft.com/sitemap.xml`；上线后 `pnpm indexnow` 已推送 19 个 URL（2026-09-24）
   - [ ] 可选：Cloudflare 面板开启 Crawler Hints
 
 ## 内容
