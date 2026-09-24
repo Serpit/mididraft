@@ -55,7 +55,7 @@ function Page() {
         </li>
       </ol>
 
-      <h2>Four things that hurt, in order</h2>
+      <h2>Five things that hurt, in order</h2>
 
       <h3>1. Reverb and delay</h3>
       <p>
@@ -80,7 +80,15 @@ function Page() {
         section where the part you want is most exposed.
       </p>
 
-      <h3>4. Very fast passages</h3>
+      <h3>4. Lossy files, a little</h3>
+      <p>
+        Compression costs a little, not a lot. What it takes away first is very
+        quiet notes and the edges of fast runs. If an{' '}
+        <a href={Routes.Root}>MP3 to MIDI conversion</a> drops notes you can
+        hear, try the lossless file before touching any settings.
+      </p>
+
+      <h3>5. Very fast passages</h3>
       <p>
         Below roughly 60–80&nbsp;ms per note, onsets start merging. Rolls,
         trills and fast runs come out as fewer, longer notes. Lowering the
@@ -132,8 +140,9 @@ function Page() {
       <h2>A workflow that saves time</h2>
       <ol>
         <li>
-          Convert fifteen seconds first, not the whole thing. If fifteen seconds
-          are unusable, sixty will be too.
+          Convert fifteen seconds first in the{' '}
+          <a href={Routes.Root}>audio to MIDI converter</a>, not the whole
+          thing. If fifteen seconds are unusable, sixty will be too.
         </li>
         <li>
           Judge it by ear with the <strong>Original / MIDI</strong> switch, not

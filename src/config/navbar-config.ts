@@ -1,14 +1,9 @@
 import { Routes } from '@/lib/routes';
 import { messages } from '@/messages';
 import { productConfig } from './product';
-import {
-  IconAdjustmentsBolt,
-  IconSparkles,
-  IconStack2,
-  IconWaveSine,
-} from '@tabler/icons-react';
+import { IconBooks, IconSparkles, IconStack2 } from '@tabler/icons-react';
 import type { MenuItemConfig } from '../types';
-import { websiteConfig } from './website';
+import { GUIDES } from './guides';
 
 const m = messages.nav;
 
@@ -26,29 +21,13 @@ export function getNavbarLinks(): MenuItemConfig[] {
     { title: m.examples, href: Routes.Examples, external: false },
   ];
 
-  const guideItems: MenuItemConfig[] = [
-    {
-      title: m.guides.flStudio.title,
-      description: m.guides.flStudio.description,
-      href: Routes.GuideFlStudio,
-      icon: IconWaveSine,
-      external: false,
-    },
-    {
-      title: m.guides.ableton.title,
-      description: m.guides.ableton.description,
-      href: Routes.GuideAbleton,
-      icon: IconAdjustmentsBolt,
-      external: false,
-    },
-    {
-      title: m.guides.improveResults.title,
-      description: m.guides.improveResults.description,
-      href: Routes.GuideImproveResults,
-      icon: IconSparkles,
-      external: false,
-    },
-  ];
+  const guideItems: MenuItemConfig[] = GUIDES.map((guide) => ({
+    title: guide.title,
+    description: guide.description,
+    href: guide.href,
+    icon: guide.icon,
+    external: false,
+  }));
 
   if (productConfig.features.batch) {
     guideItems.unshift({
@@ -69,12 +48,19 @@ export function getNavbarLinks(): MenuItemConfig[] {
     });
   }
 
+  // The hub is the one way in to reading material; the blog is reached from
+  // there and from the footer rather than competing with it up here.
+  guideItems.push({
+    title: m.allGuides.title,
+    description: m.allGuides.description,
+    href: Routes.Guides,
+    icon: IconBooks,
+    external: false,
+  });
+
   links.push({ title: m.guidesLabel, items: guideItems });
 
   links.push({ title: m.pricing, href: Routes.Pricing, external: false });
-  if (websiteConfig.blog?.enable) {
-    links.push({ title: m.blog, href: Routes.Blog, external: false });
-  }
 
   return links;
 }

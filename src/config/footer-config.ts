@@ -1,5 +1,6 @@
 import { Routes } from '@/lib/routes';
 import type { MenuItemConfig } from '../types';
+import { GUIDES } from './guides';
 import { productConfig } from './product';
 import { websiteConfig } from './website';
 import { messages } from '@/messages';
@@ -37,21 +38,12 @@ export function getFooterLinks(): MenuItemConfig[] {
   productItems.push({ title: m.faq, href: Routes.Faqs, external: false });
 
   const resourcesItems: MenuItemConfig[] = [
-    {
-      title: m.guides.flStudio.title,
-      href: Routes.GuideFlStudio,
+    { title: m.allGuides.title, href: Routes.Guides, external: false },
+    ...GUIDES.map((guide) => ({
+      title: guide.title,
+      href: guide.href,
       external: false,
-    },
-    {
-      title: m.guides.ableton.title,
-      href: Routes.GuideAbleton,
-      external: false,
-    },
-    {
-      title: m.guides.improveResults.title,
-      href: Routes.GuideImproveResults,
-      external: false,
-    },
+    })),
   ];
   if (websiteConfig.blog?.enable) {
     resourcesItems.push({ title: m.blog, href: Routes.Blog, external: false });

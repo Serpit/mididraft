@@ -44,12 +44,15 @@ import { Route as pagesAboutRouteImport } from './routes/(pages)/about'
 import { Route as legalsTermsRouteImport } from './routes/(legals)/terms'
 import { Route as legalsPrivacyRouteImport } from './routes/(legals)/privacy'
 import { Route as legalsCookieRouteImport } from './routes/(legals)/cookie'
+import { Route as pagesGuidesIndexRouteImport } from './routes/(pages)/guides/index'
 import { Route as ApiWebhooksWaffoRouteImport } from './routes/api/webhooks/waffo'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiWebhooksCreemRouteImport } from './routes/api/webhooks/creem'
 import { Route as ApiStorageFileRouteImport } from './routes/api/storage/file'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as pagesGuidesImproveAudioToMidiResultsRouteImport } from './routes/(pages)/guides/improve-audio-to-midi-results'
+import { Route as pagesGuidesAudioToMidiLogicProRouteImport } from './routes/(pages)/guides/audio-to-midi-logic-pro'
+import { Route as pagesGuidesAudioToMidiGaragebandRouteImport } from './routes/(pages)/guides/audio-to-midi-garageband'
 import { Route as pagesGuidesAudioToMidiFlStudioRouteImport } from './routes/(pages)/guides/audio-to-midi-fl-studio'
 import { Route as pagesGuidesAudioToMidiAbletonRouteImport } from './routes/(pages)/guides/audio-to-midi-ableton'
 
@@ -228,6 +231,11 @@ const legalsCookieRoute = legalsCookieRouteImport.update({
   path: '/cookie',
   getParentRoute: () => rootRouteImport,
 } as any)
+const pagesGuidesIndexRoute = pagesGuidesIndexRouteImport.update({
+  id: '/(pages)/guides/',
+  path: '/guides/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksWaffoRoute = ApiWebhooksWaffoRouteImport.update({
   id: '/api/webhooks/waffo',
   path: '/api/webhooks/waffo',
@@ -257,6 +265,18 @@ const pagesGuidesImproveAudioToMidiResultsRoute =
   pagesGuidesImproveAudioToMidiResultsRouteImport.update({
     id: '/(pages)/guides/improve-audio-to-midi-results',
     path: '/guides/improve-audio-to-midi-results',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const pagesGuidesAudioToMidiLogicProRoute =
+  pagesGuidesAudioToMidiLogicProRouteImport.update({
+    id: '/(pages)/guides/audio-to-midi-logic-pro',
+    path: '/guides/audio-to-midi-logic-pro',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const pagesGuidesAudioToMidiGaragebandRoute =
+  pagesGuidesAudioToMidiGaragebandRouteImport.update({
+    id: '/(pages)/guides/audio-to-midi-garageband',
+    path: '/guides/audio-to-midi-garageband',
     getParentRoute: () => rootRouteImport,
   } as any)
 const pagesGuidesAudioToMidiFlStudioRoute =
@@ -310,12 +330,15 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof SettingsIndexRoute
   '/guides/audio-to-midi-ableton': typeof pagesGuidesAudioToMidiAbletonRoute
   '/guides/audio-to-midi-fl-studio': typeof pagesGuidesAudioToMidiFlStudioRoute
+  '/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
+  '/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
   '/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
   '/api/webhooks/creem': typeof ApiWebhooksCreemRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/webhooks/waffo': typeof ApiWebhooksWaffoRoute
+  '/guides/': typeof pagesGuidesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -352,12 +375,15 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsIndexRoute
   '/guides/audio-to-midi-ableton': typeof pagesGuidesAudioToMidiAbletonRoute
   '/guides/audio-to-midi-fl-studio': typeof pagesGuidesAudioToMidiFlStudioRoute
+  '/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
+  '/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
   '/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
   '/api/webhooks/creem': typeof ApiWebhooksCreemRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/webhooks/waffo': typeof ApiWebhooksWaffoRoute
+  '/guides': typeof pagesGuidesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -398,12 +424,15 @@ export interface FileRoutesById {
   '/settings/': typeof SettingsIndexRoute
   '/(pages)/guides/audio-to-midi-ableton': typeof pagesGuidesAudioToMidiAbletonRoute
   '/(pages)/guides/audio-to-midi-fl-studio': typeof pagesGuidesAudioToMidiFlStudioRoute
+  '/(pages)/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
+  '/(pages)/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
   '/(pages)/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
   '/api/webhooks/creem': typeof ApiWebhooksCreemRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/webhooks/waffo': typeof ApiWebhooksWaffoRoute
+  '/(pages)/guides/': typeof pagesGuidesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -445,12 +474,15 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/guides/audio-to-midi-ableton'
     | '/guides/audio-to-midi-fl-studio'
+    | '/guides/audio-to-midi-garageband'
+    | '/guides/audio-to-midi-logic-pro'
     | '/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
     | '/api/webhooks/creem'
     | '/api/webhooks/stripe'
     | '/api/webhooks/waffo'
+    | '/guides/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -487,12 +519,15 @@ export interface FileRouteTypes {
     | '/settings'
     | '/guides/audio-to-midi-ableton'
     | '/guides/audio-to-midi-fl-studio'
+    | '/guides/audio-to-midi-garageband'
+    | '/guides/audio-to-midi-logic-pro'
     | '/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
     | '/api/webhooks/creem'
     | '/api/webhooks/stripe'
     | '/api/webhooks/waffo'
+    | '/guides'
   id:
     | '__root__'
     | '/'
@@ -532,12 +567,15 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/(pages)/guides/audio-to-midi-ableton'
     | '/(pages)/guides/audio-to-midi-fl-studio'
+    | '/(pages)/guides/audio-to-midi-garageband'
+    | '/(pages)/guides/audio-to-midi-logic-pro'
     | '/(pages)/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
     | '/api/webhooks/creem'
     | '/api/webhooks/stripe'
     | '/api/webhooks/waffo'
+    | '/(pages)/guides/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -562,12 +600,15 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   pagesGuidesAudioToMidiAbletonRoute: typeof pagesGuidesAudioToMidiAbletonRoute
   pagesGuidesAudioToMidiFlStudioRoute: typeof pagesGuidesAudioToMidiFlStudioRoute
+  pagesGuidesAudioToMidiGaragebandRoute: typeof pagesGuidesAudioToMidiGaragebandRoute
+  pagesGuidesAudioToMidiLogicProRoute: typeof pagesGuidesAudioToMidiLogicProRoute
   pagesGuidesImproveAudioToMidiResultsRoute: typeof pagesGuidesImproveAudioToMidiResultsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiStorageFileRoute: typeof ApiStorageFileRoute
   ApiWebhooksCreemRoute: typeof ApiWebhooksCreemRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
   ApiWebhooksWaffoRoute: typeof ApiWebhooksWaffoRoute
+  pagesGuidesIndexRoute: typeof pagesGuidesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -817,6 +858,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof legalsCookieRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(pages)/guides/': {
+      id: '/(pages)/guides/'
+      path: '/guides'
+      fullPath: '/guides/'
+      preLoaderRoute: typeof pagesGuidesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/waffo': {
       id: '/api/webhooks/waffo'
       path: '/api/webhooks/waffo'
@@ -857,6 +905,20 @@ declare module '@tanstack/react-router' {
       path: '/guides/improve-audio-to-midi-results'
       fullPath: '/guides/improve-audio-to-midi-results'
       preLoaderRoute: typeof pagesGuidesImproveAudioToMidiResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(pages)/guides/audio-to-midi-logic-pro': {
+      id: '/(pages)/guides/audio-to-midi-logic-pro'
+      path: '/guides/audio-to-midi-logic-pro'
+      fullPath: '/guides/audio-to-midi-logic-pro'
+      preLoaderRoute: typeof pagesGuidesAudioToMidiLogicProRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(pages)/guides/audio-to-midi-garageband': {
+      id: '/(pages)/guides/audio-to-midi-garageband'
+      path: '/guides/audio-to-midi-garageband'
+      fullPath: '/guides/audio-to-midi-garageband'
+      preLoaderRoute: typeof pagesGuidesAudioToMidiGaragebandRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(pages)/guides/audio-to-midi-fl-studio': {
@@ -966,6 +1028,8 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   pagesGuidesAudioToMidiAbletonRoute: pagesGuidesAudioToMidiAbletonRoute,
   pagesGuidesAudioToMidiFlStudioRoute: pagesGuidesAudioToMidiFlStudioRoute,
+  pagesGuidesAudioToMidiGaragebandRoute: pagesGuidesAudioToMidiGaragebandRoute,
+  pagesGuidesAudioToMidiLogicProRoute: pagesGuidesAudioToMidiLogicProRoute,
   pagesGuidesImproveAudioToMidiResultsRoute:
     pagesGuidesImproveAudioToMidiResultsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
@@ -973,6 +1037,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWebhooksCreemRoute: ApiWebhooksCreemRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
   ApiWebhooksWaffoRoute: ApiWebhooksWaffoRoute,
+  pagesGuidesIndexRoute: pagesGuidesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

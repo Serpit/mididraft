@@ -11,7 +11,7 @@ import { Link, createFileRoute } from '@tanstack/react-router';
 
 const title = 'Examples';
 const description =
-  'Three original clips run through MidiDraft, with the test conditions and what to expect from each — including one the model handles badly.';
+  'Four original clips run through MidiDraft, with the test conditions and what to expect from each — including one the model handles badly.';
 
 export const Route = createFileRoute('/(pages)/examples')({
   head: () =>
@@ -112,7 +112,7 @@ function ExamplesPage() {
         <h2 className="font-semibold">Why there is no accuracy percentage</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           A single number hides the thing that matters: which material works.
-          Three clips are not a benchmark either — they are a way to hear the
+          Four clips are not a benchmark either — they are a way to hear the
           shape of the output before you spend time on it. If you want to know
           whether your own material converts, the honest test is to run thirty
           seconds of it through the free converter, which costs you nothing and

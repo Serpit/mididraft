@@ -39,3 +39,27 @@ Runtime secrets (Cloudflare secrets, never Git): `BETTER_AUTH_SECRET`,
 
 R2 cloud uploads are disabled; audio conversion and MIDI export run locally in
 the browser. Paid plans are on sale through Waffo Pancake.
+
+## Search engines after a deploy
+
+**Bing Webmaster Tools.** Add the site at <https://www.bing.com/webmasters>
+with *Import from Google Search Console* — it copies the verified property and
+its sitemap, so no verification tag is needed in the code. If you add the site
+manually instead, submit `https://mididraft.com/sitemap.xml`.
+
+**IndexNow** (Bing, Yandex, Seznam, Naver). The key file is
+`public/a0ad0c83d2928de6b2f8b00bc22a974a.txt`. After a deploy that changed page
+content, run:
+
+```bash
+pnpm indexnow                    # every URL in the live sitemap
+pnpm indexnow /guides /examples  # only the pages that changed
+```
+
+The script reads the sitemap and key file from the live site, so run it after
+the deploy finishes. Google does not use IndexNow; use Search Console there.
+
+Sitemap `lastmod` dates are set by hand (`src/routes/sitemap[.]xml.ts`, and
+`updated` in `src/config/guides.ts` for guides). Bump a page's date when its
+content changes, and never to the build date — engines stop trusting a
+`lastmod` that changes on every deploy.

@@ -70,7 +70,7 @@ function render(notes, durationSeconds, timbreName, opts = {}) {
     const delays = [0.029, 0.037, 0.041, 0.053].map((d) => Math.floor(d * SR));
     const wet = new Float32Array(n);
     for (const delay of delays) {
-      let feedback = 0.76;
+      const feedback = 0.76;
       for (let i = delay; i < n; i++) {
         wet[i] += out[i - delay] * feedback + wet[i - delay] * 0.35;
       }
@@ -80,6 +80,11 @@ function render(notes, durationSeconds, timbreName, opts = {}) {
       out[i] = out[i] * (1 - opts.reverb) + wet[i] * opts.reverb * 0.35;
   }
 
+  return finish(out);
+}
+
+function finish(out) {
+  const n = out.length;
   // Normalise with a little headroom.
   let peak = 0;
   for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(out[i]));
@@ -91,6 +96,74 @@ function render(notes, durationSeconds, timbreName, opts = {}) {
   for (let i = 0; i < fade; i++) {
     out[i] *= i / fade;
     out[n - 1 - i] *= i / fade;
+  }
+  return out;
+}
+
+// Voice-like line: a sung vowel with vibrato and slides between notes.
+// Additive again, but the phase is accumulated sample by sample so the pitch
+// can move continuously, and each harmonic is weighted by the formant
+// envelope of an "ah" vowel. It is not a recording of a singer, and the page
+// copy says so — what it reproduces is the thing that makes voice hard to
+// transcribe: pitch that never sits still on one note.
+const VOWEL_AH = [
+  [730, 90, 1],
+  [1090, 110, 0.5],
+  [2440, 170, 0.25],
+];
+
+function formantGain(freq) {
+  let gain = 0.02;
+  for (const [centre, width, level] of VOWEL_AH) {
+    gain += level / (1 + ((freq - centre) / width) ** 2);
+  }
+  return gain;
+}
+
+function renderVocal(notes, durationSeconds) {
+  const n = Math.ceil(durationSeconds * SR);
+  const out = new Float32Array(n);
+  const glide = 0.07;
+
+  // Target pitch (in MIDI units) and loudness at every sample.
+  const pitch = new Float32Array(n);
+  const level = new Float32Array(n);
+  for (let k = 0; k < notes.length; k++) {
+    const [note, start, dur, vel] = notes[k];
+    const prev = notes[k - 1];
+    const next = notes[k + 1];
+    const legato = prev && prev[1] + prev[2] >= start - 0.02;
+    const legatoOut = next && start + dur >= next[1] - 0.02;
+    const from = Math.floor(start * SR);
+    const to = Math.min(n, Math.floor((start + dur) * SR));
+    for (let i = from; i < to; i++) {
+      const t = (i - from) / SR;
+      // Slide in from the previous note when the phrase is legato.
+      const slide =
+        legato && t < glide ? (1 - t / glide) * (prev[0] - note) : 0;
+      // Vibrato arrives after the note settles, as it does in a real voice.
+      const depth = Math.min(1, Math.max(0, (t - 0.25) / 0.3)) * 0.3;
+      pitch[i] = note + slide + depth * Math.sin(2 * Math.PI * 5.4 * t);
+      const attack = legato ? 1 : Math.min(1, t / 0.06);
+      const release = legatoOut ? 1 : Math.min(1, (to - i) / SR / 0.08);
+      level[i] = Math.max(level[i], vel * attack * release);
+    }
+  }
+
+  let phase = 0;
+  let drift = 0;
+  for (let i = 0; i < n; i++) {
+    if (level[i] <= 0) continue;
+    drift = drift * 0.9995 + (Math.random() - 0.5) * 0.002;
+    const f0 = midiToHz(pitch[i] + drift);
+    phase += f0 / SR;
+    let sample = 0;
+    for (let h = 1; h * f0 < 5000; h++) {
+      sample +=
+        (formantGain(h * f0) / h ** 0.7) * Math.sin(2 * Math.PI * h * phase);
+    }
+    const breath = (Math.random() * 2 - 1) * 0.015;
+    out[i] = (sample * 0.25 + breath) * level[i];
   }
   return out;
 }
@@ -201,19 +274,50 @@ const denseMix = [];
   });
 }
 
+// 4. Sung line with slides and vibrato — the voice-to-MIDI case.
+const vocalLine = [];
+{
+  const phrase = [
+    [62, 0, 2],
+    [64, 2, 2],
+    [66, 4, 4],
+    [69, 8, 2],
+    [67, 10, 2],
+    [66, 12, 4],
+    [64, 16, 3],
+    [62, 19, 1],
+    [64, 20, 2],
+    [66, 22, 2],
+    [64, 24, 8],
+  ];
+  // Two phrases with a breath between them.
+  for (const offset of [0, 34]) {
+    for (const [pitch, startStep, lenSteps] of phrase) {
+      vocalLine.push([
+        pitch - (offset ? 2 : 0),
+        (startStep + offset) * step * 0.8,
+        lenSteps * step * 0.8,
+        0.7 + Math.random() * 0.15,
+      ]);
+    }
+  }
+}
+
+// Every run re-rolls the random detune and velocities, so name the clips to
+// write: `node scripts/generate-examples.mjs vocal-line`. No names writes all.
+const CLIPS = {
+  'piano-melody': () => render(pianoMelody, 22, 'piano'),
+  'guitar-arpeggio': () => render(guitarArp, 18, 'guitar'),
+  'dense-mix': () =>
+    render(denseMix, 16, 'pad', { noise: 0.012, reverb: 0.45 }),
+  'vocal-line': () => finish(renderVocal(vocalLine, 18)),
+};
+
 mkdirSync('public/examples', { recursive: true });
 
-writeFileSync(
-  'public/examples/piano-melody.wav',
-  toWav(render(pianoMelody, 22, 'piano'))
-);
-writeFileSync(
-  'public/examples/guitar-arpeggio.wav',
-  toWav(render(guitarArp, 18, 'guitar'))
-);
-writeFileSync(
-  'public/examples/dense-mix.wav',
-  toWav(render(denseMix, 16, 'pad', { noise: 0.012, reverb: 0.45 }))
-);
-
-console.log('examples written');
+const wanted = process.argv.slice(2);
+for (const [name, make] of Object.entries(CLIPS)) {
+  if (wanted.length && !wanted.includes(name)) continue;
+  writeFileSync(`public/examples/${name}.wav`, toWav(make()));
+  console.log(`wrote public/examples/${name}.wav`);
+}

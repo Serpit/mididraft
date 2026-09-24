@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { Link, createFileRoute, notFound } from '@tanstack/react-router';
 import Container from '@/components/layout/container';
 import { BlogGrid } from '@/components/blog/blog-grid';
 import { BlogPagination } from '@/components/blog/blog-pagination';
@@ -7,6 +7,7 @@ import { websiteConfig } from '@/config/website';
 import { messages } from '@/messages';
 import { seo } from '@/lib/seo';
 import { getCanonicalUrl } from '@/lib/urls';
+import { Routes } from '@/lib/routes';
 
 export const Route = createFileRoute('/blog/')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -94,6 +95,14 @@ function BlogListPage() {
           </h1>
           <p className="text-muted-foreground text-lg">
             {messages.blog.description}
+          </p>
+          <p className="text-muted-foreground text-sm">
+            Step-by-step help for FL Studio, Ableton, Logic Pro and GarageBand
+            lives in the{' '}
+            <Link to={Routes.Guides} className="text-foreground underline">
+              guides
+            </Link>
+            .
           </p>
         </div>
         <BlogGrid posts={posts} />

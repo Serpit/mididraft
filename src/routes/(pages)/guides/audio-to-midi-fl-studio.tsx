@@ -38,8 +38,9 @@ function Page() {
       <h2>Before you convert</h2>
       <p>
         FL Studio has no built-in audio-to-MIDI conversion, which is why this
-        takes a round trip through a converter. Two things decide how much
-        editing you will do afterwards, and both happen before conversion:
+        takes a round trip through an{' '}
+        <a href={Routes.Root}>audio to MIDI converter</a>. Two things decide how
+        much editing you will do afterwards, and both happen before conversion:
       </p>
       <ul>
         <li>
@@ -62,8 +63,8 @@ function Page() {
       <h2>Convert the file</h2>
       <ol>
         <li>
-          Open the <a href={Routes.Root}>converter</a> and drop in the WAV you
-          exported.
+          Open the <a href={Routes.Root}>MP3 and WAV to MIDI converter</a> and
+          drop in the WAV you exported.
         </li>
         <li>
           Drag the selection handles to the section you want. The converter

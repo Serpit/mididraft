@@ -31,7 +31,7 @@ export function GuideLayout({
           className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
         >
           <IconArrowLeft className="mr-1 size-4" />
-          Back to the converter
+          Back to the audio to MIDI converter
         </Link>
 
         <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">

@@ -15,6 +15,8 @@ export const Routes = {
   Guides: '/guides',
   GuideFlStudio: '/guides/audio-to-midi-fl-studio',
   GuideAbleton: '/guides/audio-to-midi-ableton',
+  GuideLogicPro: '/guides/audio-to-midi-logic-pro',
+  GuideGarageBand: '/guides/audio-to-midi-garageband',
   GuideImproveResults: '/guides/improve-audio-to-midi-results',
   Blog: '/blog',
   Changelog: '/changelog',

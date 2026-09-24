@@ -15,6 +15,10 @@ export const messages = {
     converter: 'Converter',
     examples: 'Examples',
     guidesLabel: 'Guides',
+    allGuides: {
+      title: 'All guides',
+      description: 'Every DAW walkthrough, plus background reading',
+    },
     pricing: 'Pricing',
     faq: 'FAQ',
     blog: 'Blog',
@@ -39,6 +43,14 @@ export const messages = {
       ableton: {
         title: 'Audio to MIDI in Ableton',
         description: 'Drop a .mid into a MIDI track that plays back right',
+      },
+      logicPro: {
+        title: 'Audio to MIDI in Logic Pro',
+        description: 'Flex Pitch, or a converted .mid on an instrument track',
+      },
+      garageBand: {
+        title: 'Audio to MIDI in GarageBand',
+        description: 'Get a .mid onto a software instrument track',
       },
       improveResults: {
         title: 'Get better results',
@@ -582,7 +594,8 @@ export const messages = {
 
   blog: {
     title: 'Blog',
-    description: 'Insights, updates and stories from our team',
+    description:
+      'Product updates, and background on how audio to MIDI conversion works',
     noPosts: 'No posts yet',
     allPosts: 'All posts',
     previous: 'Previous',

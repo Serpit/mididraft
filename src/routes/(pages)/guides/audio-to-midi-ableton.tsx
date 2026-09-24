@@ -81,7 +81,9 @@ function Page() {
       <h2>Convert</h2>
       <ol>
         <li>
-          Drop the WAV into the <a href={Routes.Root}>converter</a>.
+          Drop the WAV into the{' '}
+          <a href={Routes.Root}>audio to MIDI converter</a>. An MP3 bounce works
+          too, but WAV keeps quiet notes and fast passages intact.
         </li>
         <li>Select the section you want — up to sixty seconds per run.</li>
         <li>

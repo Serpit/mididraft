@@ -16,6 +16,7 @@
     "sync-github-secrets": "tsx scripts/sync-github-secrets.ts",
     "sync-worker-secrets": "wrangler secret bulk .env.production",
     "waffo:setup": "tsx scripts/waffo-setup.ts",
+    "indexnow": "tsx scripts/indexnow.ts",
     "cf-typegen": "wrangler types --env-interface Env",
     "auth:schema:generate": "better-auth generate --yes --output src/db/auth.schema.ts",
     "db:generate": "drizzle-kit generate",

@@ -1,7 +1,7 @@
 /**
  * Demo clips shipped with the site.
  *
- * All three are synthesised from scratch for MidiDraft, so they carry no
+ * Every clip is synthesised from scratch for MidiDraft, so they carry no
  * third-party rights and anyone can re-run them. One of them is deliberately
  * a case the model handles badly — a demo reel of only wins would not tell
  * you whether the tool works on your material.
@@ -48,6 +48,20 @@ export const EXAMPLES: Example[] = [
       'Pitches land, but overlapping ring-out produces longer notes than you played, and sometimes a doubled onset. "Trim overlaps" and "merge repeated notes" are the two controls that help here.',
     conditions:
       'Synthesised plucked tone, 96 BPM, 18 seconds, mono WAV at 44.1 kHz, natural ring-out, no effects.',
+    kind: 'clear',
+  },
+  {
+    slug: 'vocal-line',
+    shortLabel: 'Sung line',
+    title: 'Sung vowel with slides and vibrato',
+    fileName: 'vocal-line.wav',
+    audioUrl: '/examples/vocal-line.wav',
+    description:
+      'A voice-like "ah" singing two short phrases, sliding between notes with vibrato on the held ones. Synthesised, not a real singer.',
+    expectation:
+      'The pitches come through, but vibrato on a held note reads as a string of fresh onsets, so long notes arrive chopped into short repeats of the same pitch. "Merge repeated notes" at around 150 ms joins them back into single notes.',
+    conditions:
+      'Synthesised vowel with formant shaping, 120 BPM, 18 seconds, mono WAV at 44.1 kHz, 70 ms slides, vibrato at 5.4 Hz, light breath noise, no reverb.',
     kind: 'clear',
   },
   {

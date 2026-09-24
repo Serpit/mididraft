@@ -17,21 +17,28 @@
 
 ## 站内
 
-- [ ] 首页 H1 逐字包含 "audio to midi"：`src/components/home/hero.tsx` 现为 "Turn MP3 & WAV into editable MIDI"，改为如 "Audio to MIDI: turn MP3 & WAV into editable MIDI"
-- [ ] 首页加 vocal / piano / guitar 场景区，每个配真实原音 vs MIDI 的 A/B 示例（voice + vocal to midi 合计 1,440/月），确认文字在 SSR 输出里
-- [ ] 三篇 guides 正文加描述性锚文本回首页（"audio to midi converter"、"mp3 to midi"）；现在只有 "Back to the converter" / "Convert a file now"
-- [ ] 统一 blog 与 guides 入口：教程都进 `/guides`，`/blog` 只放更新或关闭
+- [x] 首页 H1 逐字包含 "audio to midi"：`src/components/home/hero.tsx` 现为 "Turn MP3 & WAV into editable MIDI"，改为如 "Audio to MIDI: turn MP3 & WAV into editable MIDI"
+- [x] 首页加 vocal / piano / guitar 场景区，每个配真实原音 vs MIDI 的 A/B 示例（voice + vocal to midi 合计 1,440/月），确认文字在 SSR 输出里
+  - 2026-09-24：`#voice-to-midi` / `#piano-to-midi` / `#guitar-to-midi` 替换了原示例条；新增合成人声 `vocal-line.wav`（明确标注非真人）。A/B 走转换器的 Original / MIDI 切换。
+- [x] 三篇 guides 正文加描述性锚文本回首页（"audio to midi converter"、"mp3 to midi"）；现在只有 "Back to the converter" / "Convert a file now"
+- [x] 统一 blog 与 guides 入口：教程都进 `/guides`，`/blog` 只放更新或关闭
+  - 2026-09-24：新增 `/guides` 汇总页（教程 + 博客文章作「背景阅读」），导航去掉 Blog，保留在页脚；现有博文 URL 不动。
 
 ## 技术
 
-- [ ] sitemap 静态页加 `lastmod`
-- [ ] 检查 `/pricing` 在 `paidPlans=false` 时内容不空洞
+- [x] sitemap 静态页加 `lastmod`（手动维护，见 `docs/deployment.md`）
+- [x] 检查 `/pricing` 在 `paidPlans=false` 时内容不空洞（现已 `paidPlans=true`；false 时仍有三档说明、为何未开售、退款段落和 FAQ，不空洞）
 - [ ] 接入 Bing Webmaster Tools + IndexNow（Cloudflare Crawler Hints）
+  - [x] IndexNow key 文件 + `pnpm indexnow`（部署后运行）
+  - [x] Bing Webmaster 从 GSC 导入站点（2026-09-24）
+  - [ ] Bing 里提交 `https://mididraft.com/sitemap.xml`（导入后 Sitemaps 列表为空）
+  - [ ] 可选：Cloudflare 面板开启 Crawler Hints
 
 ## 内容
 
-- [ ] Logic Pro 的 audio to midi 教程（真实输入音频、导出 `.mid`、DAW 截图、链回首页）
-- [ ] GarageBand 的 audio to midi 教程
+- [x] Logic Pro 的 audio to midi 教程（真实输入音频、导出 `.mid`、DAW 截图、链回首页）
+  - [ ] DAW 截图待补（本机未装 Logic / GarageBand）
+- [x] GarageBand 的 audio to midi 教程（截图同样待补）
 - [ ] 30–60 秒 YouTube 演示视频，描述放 mididraft.com 链接
 
 ## 外链

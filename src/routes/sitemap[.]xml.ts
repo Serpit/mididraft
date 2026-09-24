@@ -3,6 +3,16 @@ import { getBaseUrl } from '@/lib/urls';
 import { getSortedPosts } from '@/lib/blog';
 import { productConfig } from '@/config/product';
 import { websiteConfig } from '@/config/website';
+import { GUIDES } from '@/config/guides';
+
+interface SitemapEntry {
+  path: string;
+  changefreq?: string;
+  priority?: string;
+  lastmod?: string;
+}
+
+const toDay = (date: string) => new Date(date).toISOString().slice(0, 10);
 
 /**
  * Dynamic sitemap.xml
@@ -16,34 +26,46 @@ export const Route = createFileRoute('/sitemap.xml')({
     handlers: {
       GET: async () => {
         const base = getBaseUrl().replace(/\/$/, '');
-        const staticUrls: {
-          path: string;
-          changefreq?: string;
-          priority?: string;
-        }[] = [
-          { path: '/', changefreq: 'weekly', priority: '1.0' },
-          { path: '/examples', changefreq: 'monthly', priority: '0.8' },
-          { path: '/pricing', changefreq: 'monthly', priority: '0.7' },
+        // `lastmod` is the date the page's content last changed, maintained by
+        // hand. Search engines ignore lastmod once it proves unreliable, so it
+        // is not stamped with the build date: bump a page's date only when its
+        // text changes.
+        const staticUrls: SitemapEntry[] = [
           {
-            path: '/guides/audio-to-midi-fl-studio',
-            changefreq: 'monthly',
-            priority: '0.7',
+            path: '/',
+            changefreq: 'weekly',
+            priority: '1.0',
+            lastmod: '2026-09-24',
           },
           {
-            path: '/guides/audio-to-midi-ableton',
+            path: '/examples',
             changefreq: 'monthly',
-            priority: '0.7',
+            priority: '0.8',
+            lastmod: '2026-09-24',
           },
           {
-            path: '/guides/improve-audio-to-midi-results',
+            path: '/pricing',
             changefreq: 'monthly',
             priority: '0.7',
+            lastmod: '2026-09-23',
           },
-          { path: '/about', changefreq: 'monthly' },
-          { path: '/contact', changefreq: 'monthly' },
-          { path: '/privacy', changefreq: 'yearly' },
-          { path: '/terms', changefreq: 'yearly' },
-          { path: '/cookie', changefreq: 'yearly' },
+          {
+            path: '/guides',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: '2026-09-24',
+          },
+          ...GUIDES.map((guide) => ({
+            path: guide.href,
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: guide.updated,
+          })),
+          { path: '/about', changefreq: 'monthly', lastmod: '2026-09-23' },
+          { path: '/contact', changefreq: 'monthly', lastmod: '2026-09-23' },
+          { path: '/privacy', changefreq: 'yearly', lastmod: '2026-09-23' },
+          { path: '/terms', changefreq: 'yearly', lastmod: '2026-09-23' },
+          { path: '/cookie', changefreq: 'yearly', lastmod: '2026-09-23' },
         ];
 
         // Feature pages join the sitemap the day the feature ships, not before.
@@ -52,6 +74,7 @@ export const Route = createFileRoute('/sitemap.xml')({
             path: '/batch-audio-to-midi',
             changefreq: 'monthly',
             priority: '0.8',
+            lastmod: '2026-09-24',
           });
         }
         if (productConfig.features.cleanupPresets) {
@@ -59,16 +82,19 @@ export const Route = createFileRoute('/sitemap.xml')({
             path: '/midi-cleanup',
             changefreq: 'monthly',
             priority: '0.8',
+            lastmod: '2026-09-23',
           });
         }
         if (websiteConfig.blog?.enable) {
-          staticUrls.push({ path: '/blog', changefreq: 'weekly' });
+          const newest = getSortedPosts()[0];
+          staticUrls.push({
+            path: '/blog',
+            changefreq: 'weekly',
+            lastmod: newest ? toDay(newest.date) : undefined,
+          });
         }
 
-        const urlEntry = (
-          path: string,
-          opts?: { changefreq?: string; priority?: string; lastmod?: string }
-        ) => {
+        const urlEntry = (path: string, opts?: Omit<SitemapEntry, 'path'>) => {
           const lastmod = opts?.lastmod
             ? `\n    <lastmod>${opts.lastmod}</lastmod>`
             : '';
@@ -82,9 +108,7 @@ export const Route = createFileRoute('/sitemap.xml')({
         };
 
         const staticPart = staticUrls
-          .map((u) =>
-            urlEntry(u.path, { changefreq: u.changefreq, priority: u.priority })
-          )
+          .map(({ path, ...opts }) => urlEntry(path, opts))
           .join('\n');
 
         let blogPart = '';
@@ -94,7 +118,7 @@ export const Route = createFileRoute('/sitemap.xml')({
             .map((p) =>
               urlEntry(`/blog/${p.slug}`, {
                 changefreq: 'monthly',
-                lastmod: new Date(p.date).toISOString().slice(0, 10),
+                lastmod: toDay(p.date),
               })
             )
             .join('\n');

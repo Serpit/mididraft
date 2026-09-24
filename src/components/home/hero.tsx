@@ -21,7 +21,7 @@ export function HeroSection() {
       <Container className="px-4 py-10 sm:py-12">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-balance text-3xl font-medium tracking-tight sm:text-4xl">
-            Turn MP3 &amp; WAV into editable MIDI
+            Audio to MIDI: turn MP3 &amp; WAV into editable MIDI
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-balance leading-relaxed text-muted-foreground sm:text-lg">
             {productConfig.positioning}
