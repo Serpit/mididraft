@@ -54,6 +54,23 @@ every kernel.
 Copy on this site states limitations plainly and avoids accuracy percentages. The
 examples page ships a clip the model handles badly on purpose. Keep it that way.
 
+## GA4 reporting skills
+
+For daily Google Analytics data, UV, and feature usage, use the personal skills
+installed in `~/.claude/skills/`:
+
+- `ga4-daily-report`: daily UV, core feature users and penetration, with a
+  previous-day comparison.
+- `ga4-feature-penetration`: feature breakdowns for previews, A/B comparison,
+  settings, downloads, input sources, and devices.
+
+Read the relevant `SKILL.md` and its linked references before querying. These
+skills share their source with Codex, including the MidiDraft property and
+existing exploration links. Use the installed `ego-browser` skill when browser
+access is needed. UV means `totalUsers`; feature penetration uses deduplicated
+feature users divided by UV for the same period and scope. Missing data is not
+zero. Check live data rather than reusing an earlier report.
+
 ## Commands
 
 ```bash

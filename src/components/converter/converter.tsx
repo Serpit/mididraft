@@ -1,10 +1,12 @@
 import { DropZone } from '@/components/converter/drop-zone';
 import { PianoRoll } from '@/components/converter/piano-roll';
+import { PresetControls } from '@/components/converter/preset-controls';
 import { SettingsPanel } from '@/components/converter/settings-panel';
 import { Transport } from '@/components/converter/transport';
 import { Waveform } from '@/components/converter/waveform';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { useCurrentPlan } from '@/hooks/use-payment';
 import {
   AudioError,
   MAX_DURATION_SECONDS,
@@ -86,6 +88,7 @@ function analyzeErrorReason(caught: unknown): AnalyzeErrorReason {
 }
 
 export function Converter({ className }: { className?: string }) {
+  const { hasPresetAccess } = useCurrentPlan();
   const [stage, setStage] = useState<Stage>('idle');
   const [audio, setAudio] = useState<LoadedAudio | null>(null);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
@@ -444,6 +447,23 @@ export function Converter({ className }: { className?: string }) {
     [modelOutput, trackAdjusted]
   );
 
+  const handlePresetApply = useCallback(
+    async (settings: {
+      detection: TranscribeOptions;
+      cleanup: CleanupOptions;
+      bpm: number;
+    }) => {
+      setDetection(settings.detection);
+      setCleanup(settings.cleanup);
+      setBpm(settings.bpm);
+      setBpmTouched(true);
+      if (!modelOutput) return;
+      const detected = await notesFromOutput(modelOutput, settings.detection);
+      setRawNotes(detected);
+    },
+    [modelOutput]
+  );
+
   const handleSelectionChange = useCallback(
     (next: { start: number; end: number }) => {
       setSelection(next);
@@ -768,6 +788,16 @@ export function Converter({ className }: { className?: string }) {
                   id="converter-adjust"
                   className="rounded-b-2xl border-t border-hairline px-5 py-6"
                 >
+                  {hasPresetAccess && (
+                    <div className="mb-6">
+                      <PresetControls
+                        detection={detection}
+                        cleanup={cleanup}
+                        bpm={bpm}
+                        onApply={handlePresetApply}
+                      />
+                    </div>
+                  )}
                   <SettingsPanel
                     detection={detection}
                     onDetectionChange={handleDetectionChange}

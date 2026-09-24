@@ -7,6 +7,7 @@ import { relations } from 'drizzle-orm';
 import { integer, sqliteTable, text, index } from 'drizzle-orm/sqlite-core';
 import { user } from './auth.schema';
 import type { PaymentScene, PaymentStatus, PaymentType, PlanInterval } from '@/payment/types';
+import type { CleanupOptions, TranscribeOptions } from '@/lib/midi/types';
 
 /** 
  * Payment: subscription and one-time 
@@ -83,6 +84,36 @@ export const userFiles = sqliteTable(
 export const userFilesRelations = relations(userFiles, ({ one }) => ({
   user: one(user, {
     fields: [userFiles.userId],
+    references: [user.id],
+  }),
+}));
+
+export interface PresetSettings {
+  transcribe: TranscribeOptions;
+  cleanup: CleanupOptions;
+  bpm: number;
+}
+
+export const cleanupPresets = sqliteTable(
+  'cleanup_presets',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    settings: text('settings', { mode: 'json' }).notNull().$type<PresetSettings>(),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  },
+  (table) => [
+    index('cleanup_presets_user_id_idx').on(table.userId),
+  ]
+);
+
+export const cleanupPresetsRelations = relations(cleanupPresets, ({ one }) => ({
+  user: one(user, {
+    fields: [cleanupPresets.userId],
     references: [user.id],
   }),
 }));

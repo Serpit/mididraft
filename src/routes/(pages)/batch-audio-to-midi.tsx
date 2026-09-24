@@ -1,4 +1,5 @@
-import { NotLaunched } from '@/components/home/not-launched';
+import { BatchConverter } from '@/components/batch/batch-converter';
+import Container from '@/components/layout/container';
 import { productConfig } from '@/config/product';
 import { websiteConfig } from '@/config/website';
 import { seo } from '@/lib/seo';
@@ -13,7 +14,6 @@ export const Route = createFileRoute('/(pages)/batch-audio-to-midi')({
       title: `Batch audio to MIDI converter | ${websiteConfig.metadata?.name}`,
       description,
     });
-    // Unfinished feature: keep it out of the index until it works.
     return productConfig.features.batch
       ? metadata
       : {
@@ -29,17 +29,16 @@ export const Route = createFileRoute('/(pages)/batch-audio-to-midi')({
 
 function Page() {
   return (
-    <NotLaunched
-      title="Batch audio to MIDI"
-      summary={description}
-      scope={[
-        'Up to 10 clips in one run, processed one after another in the browser',
-        'One set of detection and cleanup settings applied to the whole batch',
-        'Consistent file naming, so the output drops straight into a project folder',
-        'Per-file retry, so one failure does not cost you the whole batch',
-        'A total length cap per batch, set from what real machines can actually finish',
-      ]}
-      gate="The batch has to be genuinely faster than doing the same clips one at a time — the target is at least 30% off the median total time, measured against the free single-file flow on the same material. Until that is measured and met, there is nothing here worth charging for, and this page stays unpublished."
-    />
+    <Container className="px-4 py-10">
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Batch audio to MIDI
+          </h1>
+          <p className="mt-3 text-lg text-muted-foreground">{description}</p>
+        </div>
+        <BatchConverter />
+      </div>
+    </Container>
   );
 }

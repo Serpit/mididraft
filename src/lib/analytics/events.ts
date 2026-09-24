@@ -36,6 +36,8 @@ export type AnalyzeErrorReason =
 
 export type SettingGroup = 'detection' | 'cleanup' | 'tempo';
 
+export type BatchStatus = 'completed' | 'partial' | 'failed';
+
 /** Every event the site sends, and the parameters each one carries. */
 export interface AnalyticsEvents {
   /** A file decoded and passed the length check. */
@@ -77,6 +79,39 @@ export interface AnalyticsEvents {
     cleanup_active: 'yes' | 'no';
     bpm_edited: 'yes' | 'no';
     file_index: number;
+  };
+  /** A batch conversion started. */
+  batch_start: {
+    file_count: number;
+    plan_id: string;
+  };
+  /** A batch conversion finished (all, some, or none succeeded). */
+  batch_complete: {
+    file_count: number;
+    success_count: number;
+    fail_count: number;
+    duration_ms: number;
+    status: BatchStatus;
+    plan_id: string;
+  };
+  /** The ZIP was downloaded after a batch. */
+  batch_download: {
+    file_count: number;
+    plan_id: string;
+  };
+  /** A preset was loaded and applied. */
+  preset_applied: {
+    preset_id: string;
+  };
+  /** A preset was saved for the first time. */
+  preset_created: Record<string, never>;
+  /** A preset was updated with new settings. */
+  preset_updated: {
+    preset_id: string;
+  };
+  /** A preset was deleted. */
+  preset_deleted: {
+    preset_id: string;
   };
 }
 

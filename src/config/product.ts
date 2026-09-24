@@ -19,6 +19,12 @@ export const productConfig = {
     recommendedSegmentSeconds: [15, 60] as const,
   },
 
+  /** Per-plan batch limits. Free cannot batch at all. */
+  batchLimits: {
+    pass: { maxFiles: 10, maxDurationMinutes: 3 },
+    pro: { maxFiles: 20, maxDurationMinutes: 30 },
+  } as const,
+
   /**
    * Phase gating. Phase 1 (the free converter) is live; the paid workflow
    * pages stay unlisted until the features behind them actually work.
@@ -26,14 +32,14 @@ export const productConfig = {
   features: {
     /** Phase 1: free single-file converter. */
     converter: true,
-    /** Phase 2: batch processing. Not built yet. */
-    batch: false,
-    /** Phase 2: cleanup presets applied across a batch. Not built yet. */
-    cleanupPresets: false,
+    /** Phase 2: batch processing. */
+    batch: true,
+    /** Phase 2: cleanup presets applied across a batch. */
+    cleanupPresets: true,
     /** Phase 3: import an existing .mid for cleanup. Not built yet. */
     midiImport: false,
-    /** Paid plans go live with the phase 2 features, not before. */
-    paidPlans: false,
+    /** Paid plans go live with the phase 2 features. */
+    paidPlans: true,
   },
 
   /**

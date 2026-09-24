@@ -25,8 +25,50 @@ export function parseWranglerConfig(): WranglerConfig {
   const wranglerPath = path.join(__dirname, '..', 'wrangler.jsonc');
   const wranglerContent = fs.readFileSync(wranglerPath, 'utf8');
 
-  // Remove comments from the JSONC content
-  const jsonContent = wranglerContent.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '');
+  // Remove comments from the JSONC content, respecting string literals
+  let inBlockComment = false;
+  const lines = wranglerContent.split('\n');
+  const stripped = lines.map((line) => {
+    let result = '';
+    let inString = false;
+    let escaped = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inBlockComment) {
+        if (ch === '*' && i + 1 < line.length && line[i + 1] === '/') {
+          inBlockComment = false;
+          i++;
+        }
+        continue;
+      }
+      if (escaped) {
+        result += ch;
+        escaped = false;
+        continue;
+      }
+      if (ch === '\\') {
+        result += ch;
+        escaped = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        result += ch;
+        continue;
+      }
+      if (!inString && ch === '/' && i + 1 < line.length) {
+        if (line[i + 1] === '/') break;
+        if (line[i + 1] === '*') {
+          inBlockComment = true;
+          i++;
+          continue;
+        }
+      }
+      result += ch;
+    }
+    return result;
+  });
+  const jsonContent = stripped.join('\n');
 
   // Fix trailing commas in objects and arrays (which are valid in JSONC but not in JSON)
   const fixedJsonContent = jsonContent.replace(/,\s*([}\]])/g, '$1'); // Replace trailing commas before closing brackets

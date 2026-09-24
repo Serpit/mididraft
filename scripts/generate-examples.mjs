@@ -18,9 +18,21 @@ function adsr(t, dur, { a = 0.01, d = 0.12, s = 0.6, r = 0.25 }) {
 
 // Timbres as harmonic amplitude series.
 const TIMBRES = {
-  piano: { partials: [1, 0.45, 0.22, 0.12, 0.07, 0.04], env: { a: 0.006, d: 0.35, s: 0.28, r: 0.35 }, decay: 1.6 },
-  guitar: { partials: [1, 0.6, 0.35, 0.18, 0.1, 0.06, 0.03], env: { a: 0.004, d: 0.25, s: 0.22, r: 0.3 }, decay: 2.2 },
-  pad: { partials: [1, 0.5, 0.3, 0.15], env: { a: 0.08, d: 0.3, s: 0.7, r: 0.5 }, decay: 0.5 },
+  piano: {
+    partials: [1, 0.45, 0.22, 0.12, 0.07, 0.04],
+    env: { a: 0.006, d: 0.35, s: 0.28, r: 0.35 },
+    decay: 1.6,
+  },
+  guitar: {
+    partials: [1, 0.6, 0.35, 0.18, 0.1, 0.06, 0.03],
+    env: { a: 0.004, d: 0.25, s: 0.22, r: 0.3 },
+    decay: 2.2,
+  },
+  pad: {
+    partials: [1, 0.5, 0.3, 0.15],
+    env: { a: 0.08, d: 0.3, s: 0.7, r: 0.5 },
+    decay: 0.5,
+  },
 };
 
 function render(notes, durationSeconds, timbreName, opts = {}) {
@@ -64,7 +76,8 @@ function render(notes, durationSeconds, timbreName, opts = {}) {
       }
       void feedback;
     }
-    for (let i = 0; i < n; i++) out[i] = out[i] * (1 - opts.reverb) + wet[i] * opts.reverb * 0.35;
+    for (let i = 0; i < n; i++)
+      out[i] = out[i] * (1 - opts.reverb) + wet[i] * opts.reverb * 0.35;
   }
 
   // Normalise with a little headroom.
@@ -111,24 +124,47 @@ const step = beat / 2;
 const pianoMelody = [];
 {
   const line = [
-    [72, 0, 2], [74, 2, 2], [76, 4, 2], [79, 6, 2],
-    [77, 8, 2], [76, 10, 2], [74, 12, 4],
-    [72, 16, 2], [69, 18, 2], [71, 20, 2], [74, 22, 2],
+    [72, 0, 2],
+    [74, 2, 2],
+    [76, 4, 2],
+    [79, 6, 2],
+    [77, 8, 2],
+    [76, 10, 2],
+    [74, 12, 4],
+    [72, 16, 2],
+    [69, 18, 2],
+    [71, 20, 2],
+    [74, 22, 2],
     [72, 24, 8],
   ];
   for (const [pitch, startStep, lenSteps] of line) {
-    pianoMelody.push([pitch, startStep * step, lenSteps * step * 0.92, 0.75 + Math.random() * 0.2]);
+    pianoMelody.push([
+      pitch,
+      startStep * step,
+      lenSteps * step * 0.92,
+      0.75 + Math.random() * 0.2,
+    ]);
   }
 }
 
 // 2. Guitar arpeggio — still monophonic per moment, slightly faster.
 const guitarArp = [];
 {
-  const shapes = [[52, 57, 60, 64], [50, 57, 62, 65], [48, 55, 60, 64], [47, 55, 59, 62]];
+  const shapes = [
+    [52, 57, 60, 64],
+    [50, 57, 62, 65],
+    [48, 55, 60, 64],
+    [47, 55, 59, 62],
+  ];
   let stepIndex = 0;
   for (const shape of shapes) {
     for (const pitch of [...shape, ...shape.slice(0, 3).reverse()]) {
-      guitarArp.push([pitch, stepIndex * step * 0.75, step * 0.9, 0.62 + Math.random() * 0.25]);
+      guitarArp.push([
+        pitch,
+        stepIndex * step * 0.75,
+        step * 0.9,
+        0.62 + Math.random() * 0.25,
+      ]);
       stepIndex++;
     }
   }
@@ -137,23 +173,47 @@ const guitarArp = [];
 // 3. Dense chord mix with reverb and noise — the honest failure case.
 const denseMix = [];
 {
-  const chords = [[48, 52, 55, 59, 62], [45, 50, 53, 57, 60], [43, 47, 50, 55, 59], [41, 48, 52, 57, 60]];
+  const chords = [
+    [48, 52, 55, 59, 62],
+    [45, 50, 53, 57, 60],
+    [43, 47, 50, 55, 59],
+    [41, 48, 52, 57, 60],
+  ];
   chords.forEach((chord, index) => {
     for (const pitch of chord) {
-      denseMix.push([pitch, index * beat * 2, beat * 1.9, 0.5 + Math.random() * 0.3]);
+      denseMix.push([
+        pitch,
+        index * beat * 2,
+        beat * 1.9,
+        0.5 + Math.random() * 0.3,
+      ]);
     }
     // A melody riding on top, which is what a user actually wants back.
     const melody = [67, 69, 71, 72, 71, 69];
     melody.forEach((pitch, i) => {
-      denseMix.push([pitch + index, index * beat * 2 + i * step * 0.6, step * 0.55, 0.45]);
+      denseMix.push([
+        pitch + index,
+        index * beat * 2 + i * step * 0.6,
+        step * 0.55,
+        0.45,
+      ]);
     });
   });
 }
 
 mkdirSync('public/examples', { recursive: true });
 
-writeFileSync('public/examples/piano-melody.wav', toWav(render(pianoMelody, 22, 'piano')));
-writeFileSync('public/examples/guitar-arpeggio.wav', toWav(render(guitarArp, 18, 'guitar')));
-writeFileSync('public/examples/dense-mix.wav', toWav(render(denseMix, 16, 'pad', { noise: 0.012, reverb: 0.45 })));
+writeFileSync(
+  'public/examples/piano-melody.wav',
+  toWav(render(pianoMelody, 22, 'piano'))
+);
+writeFileSync(
+  'public/examples/guitar-arpeggio.wav',
+  toWav(render(guitarArp, 18, 'guitar'))
+);
+writeFileSync(
+  'public/examples/dense-mix.wav',
+  toWav(render(denseMix, 16, 'pad', { noise: 0.012, reverb: 0.45 }))
+);
 
 console.log('examples written');
