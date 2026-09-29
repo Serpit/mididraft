@@ -54,6 +54,10 @@ export const messages = {
         title: 'Audio to MIDI in GarageBand',
         description: 'Get a .mid onto a software instrument track',
       },
+      reaper: {
+        title: 'Audio to MIDI in REAPER',
+        description: 'Render a clean stem, import the .mid at project tempo',
+      },
       improveResults: {
         title: 'Get better results',
         description: 'Which takes convert well, and which never will',

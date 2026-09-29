@@ -8,7 +8,7 @@ import { IconArrowRight } from '@tabler/icons-react';
 import { Link, createFileRoute } from '@tanstack/react-router';
 
 const description =
-  'Step-by-step audio to MIDI guides for FL Studio, Ableton Live, Logic Pro and GarageBand, plus what decides whether a recording converts well.';
+  'Step-by-step audio to MIDI guides for FL Studio, Ableton Live, Logic Pro, GarageBand and REAPER, plus what decides whether a recording converts well.';
 
 export const Route = createFileRoute('/(pages)/guides/')({
   head: () =>

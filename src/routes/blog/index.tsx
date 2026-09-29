@@ -97,8 +97,8 @@ function BlogListPage() {
             {messages.blog.description}
           </p>
           <p className="text-muted-foreground text-sm">
-            Step-by-step help for FL Studio, Ableton, Logic Pro and GarageBand
-            lives in the{' '}
+            Step-by-step help for FL Studio, Ableton, Logic Pro, GarageBand and
+            REAPER lives in the{' '}
             <Link to={Routes.Guides} className="text-foreground underline">
               guides
             </Link>

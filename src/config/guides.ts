@@ -4,6 +4,7 @@ import {
   IconAdjustmentsBolt,
   IconMusic,
   IconPiano,
+  IconPlug,
   IconSparkles,
   IconWaveSine,
 } from '@tabler/icons-react';
@@ -57,6 +58,13 @@ export const GUIDES: Guide[] = [
     icon: IconMusic,
     art: 'headphones',
     updated: '2026-09-24',
+  },
+  {
+    href: Routes.GuideReaper,
+    ...m.reaper,
+    icon: IconPlug,
+    art: 'plug',
+    updated: '2026-09-29',
   },
   {
     href: Routes.GuideImproveResults,

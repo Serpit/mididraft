@@ -51,6 +51,7 @@ import { Route as ApiWebhooksCreemRouteImport } from './routes/api/webhooks/cree
 import { Route as ApiStorageFileRouteImport } from './routes/api/storage/file'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as pagesGuidesImproveAudioToMidiResultsRouteImport } from './routes/(pages)/guides/improve-audio-to-midi-results'
+import { Route as pagesGuidesAudioToMidiReaperRouteImport } from './routes/(pages)/guides/audio-to-midi-reaper'
 import { Route as pagesGuidesAudioToMidiLogicProRouteImport } from './routes/(pages)/guides/audio-to-midi-logic-pro'
 import { Route as pagesGuidesAudioToMidiGaragebandRouteImport } from './routes/(pages)/guides/audio-to-midi-garageband'
 import { Route as pagesGuidesAudioToMidiFlStudioRouteImport } from './routes/(pages)/guides/audio-to-midi-fl-studio'
@@ -267,6 +268,12 @@ const pagesGuidesImproveAudioToMidiResultsRoute =
     path: '/guides/improve-audio-to-midi-results',
     getParentRoute: () => rootRouteImport,
   } as any)
+const pagesGuidesAudioToMidiReaperRoute =
+  pagesGuidesAudioToMidiReaperRouteImport.update({
+    id: '/(pages)/guides/audio-to-midi-reaper',
+    path: '/guides/audio-to-midi-reaper',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const pagesGuidesAudioToMidiLogicProRoute =
   pagesGuidesAudioToMidiLogicProRouteImport.update({
     id: '/(pages)/guides/audio-to-midi-logic-pro',
@@ -332,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/guides/audio-to-midi-fl-studio': typeof pagesGuidesAudioToMidiFlStudioRoute
   '/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
   '/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
+  '/guides/audio-to-midi-reaper': typeof pagesGuidesAudioToMidiReaperRoute
   '/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
@@ -377,6 +385,7 @@ export interface FileRoutesByTo {
   '/guides/audio-to-midi-fl-studio': typeof pagesGuidesAudioToMidiFlStudioRoute
   '/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
   '/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
+  '/guides/audio-to-midi-reaper': typeof pagesGuidesAudioToMidiReaperRoute
   '/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
@@ -426,6 +435,7 @@ export interface FileRoutesById {
   '/(pages)/guides/audio-to-midi-fl-studio': typeof pagesGuidesAudioToMidiFlStudioRoute
   '/(pages)/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
   '/(pages)/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
+  '/(pages)/guides/audio-to-midi-reaper': typeof pagesGuidesAudioToMidiReaperRoute
   '/(pages)/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
@@ -476,6 +486,7 @@ export interface FileRouteTypes {
     | '/guides/audio-to-midi-fl-studio'
     | '/guides/audio-to-midi-garageband'
     | '/guides/audio-to-midi-logic-pro'
+    | '/guides/audio-to-midi-reaper'
     | '/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
@@ -521,6 +532,7 @@ export interface FileRouteTypes {
     | '/guides/audio-to-midi-fl-studio'
     | '/guides/audio-to-midi-garageband'
     | '/guides/audio-to-midi-logic-pro'
+    | '/guides/audio-to-midi-reaper'
     | '/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
@@ -569,6 +581,7 @@ export interface FileRouteTypes {
     | '/(pages)/guides/audio-to-midi-fl-studio'
     | '/(pages)/guides/audio-to-midi-garageband'
     | '/(pages)/guides/audio-to-midi-logic-pro'
+    | '/(pages)/guides/audio-to-midi-reaper'
     | '/(pages)/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
@@ -602,6 +615,7 @@ export interface RootRouteChildren {
   pagesGuidesAudioToMidiFlStudioRoute: typeof pagesGuidesAudioToMidiFlStudioRoute
   pagesGuidesAudioToMidiGaragebandRoute: typeof pagesGuidesAudioToMidiGaragebandRoute
   pagesGuidesAudioToMidiLogicProRoute: typeof pagesGuidesAudioToMidiLogicProRoute
+  pagesGuidesAudioToMidiReaperRoute: typeof pagesGuidesAudioToMidiReaperRoute
   pagesGuidesImproveAudioToMidiResultsRoute: typeof pagesGuidesImproveAudioToMidiResultsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiStorageFileRoute: typeof ApiStorageFileRoute
@@ -907,6 +921,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof pagesGuidesImproveAudioToMidiResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(pages)/guides/audio-to-midi-reaper': {
+      id: '/(pages)/guides/audio-to-midi-reaper'
+      path: '/guides/audio-to-midi-reaper'
+      fullPath: '/guides/audio-to-midi-reaper'
+      preLoaderRoute: typeof pagesGuidesAudioToMidiReaperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(pages)/guides/audio-to-midi-logic-pro': {
       id: '/(pages)/guides/audio-to-midi-logic-pro'
       path: '/guides/audio-to-midi-logic-pro'
@@ -1030,6 +1051,7 @@ const rootRouteChildren: RootRouteChildren = {
   pagesGuidesAudioToMidiFlStudioRoute: pagesGuidesAudioToMidiFlStudioRoute,
   pagesGuidesAudioToMidiGaragebandRoute: pagesGuidesAudioToMidiGaragebandRoute,
   pagesGuidesAudioToMidiLogicProRoute: pagesGuidesAudioToMidiLogicProRoute,
+  pagesGuidesAudioToMidiReaperRoute: pagesGuidesAudioToMidiReaperRoute,
   pagesGuidesImproveAudioToMidiResultsRoute:
     pagesGuidesImproveAudioToMidiResultsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
