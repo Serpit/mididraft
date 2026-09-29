@@ -8,7 +8,7 @@ import { createFileRoute } from '@tanstack/react-router';
 // Placeholder images would be worse than none.
 
 const description =
-  'Convert an audio loop to MIDI and import it into FL Studio, with the tempo set so the notes land where you played them.';
+  'How to get MIDI from audio in FL Studio: convert the loop, import the .mid, and set the tempo so the notes land where you played them.';
 
 export const Route = createFileRoute('/(pages)/guides/audio-to-midi-fl-studio')(
   {
@@ -17,7 +17,7 @@ export const Route = createFileRoute('/(pages)/guides/audio-to-midi-fl-studio')(
         title: `Audio to MIDI in FL Studio: import a converted .mid | ${websiteConfig.metadata?.name}`,
         description,
         keywords:
-          'audio to midi fl studio, import midi fl studio, mp3 to midi fl studio, fl studio midi tempo',
+          'audio to midi fl studio, how to get midi from audio fl studio, import midi fl studio, mp3 to midi fl studio, fl studio midi tempo',
         type: 'article',
       }),
     component: Page,

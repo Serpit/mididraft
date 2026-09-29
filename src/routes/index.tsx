@@ -53,7 +53,7 @@ export const Route = createFileRoute('/')({
       title,
       description,
       keywords:
-        'audio to midi, mp3 to midi, wav to midi, audio to midi converter, mp3 to midi converter, convert audio to midi, voice to midi, humming to midi',
+        'audio to midi, mp3 to midi, wav to midi, audio to midi converter, mp3 to midi converter, convert audio to midi, midi converter, midi extractor, extract midi from audio, voice to midi, humming to midi',
     });
 
     return {

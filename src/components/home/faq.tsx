@@ -58,7 +58,7 @@ export const FAQ_ITEMS = [
     id: 'formats',
     question: 'Which files can I convert?',
     answer:
-      'MP3, WAV, FLAC, M4A, AAC and OGG, up to 30 MB and 3 minutes. The output is a standard .mid file that opens in any DAW, notation program or hardware sequencer.',
+      'MP3, WAV, FLAC, M4A, AAC and OGG, up to 30 MB and 3 minutes. It extracts the notes into a standard .mid file that opens in any DAW, notation program or hardware sequencer.',
   },
 ];
 
