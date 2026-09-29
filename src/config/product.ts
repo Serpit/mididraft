@@ -52,6 +52,13 @@ export const productConfig = {
     proYearly: { amountUsd: 89, interval: 'year' as const },
   },
 
+  /**
+   * Date the pricing page's content last changed, YYYY-MM-DD. Feeds the
+   * sitemap `lastmod` and the page's `dateModified` schema, so bump it when
+   * prices, plans or the copy change — not for a typo.
+   */
+  pricingUpdated: '2026-09-23',
+
   launchOffer: {
     enabled: true,
     campaign: 'first-project-v1',

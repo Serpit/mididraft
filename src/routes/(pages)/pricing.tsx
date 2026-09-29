@@ -1,6 +1,6 @@
 import { useLaunchOffer } from '@/components/pricing/launch-offer';
 import { authClient } from '@/auth/client';
-import { FaqSection } from '@/components/home/faq';
+import { FAQ_ITEMS, FaqSection } from '@/components/home/faq';
 import { CheckoutButton } from '@/components/pricing/create-checkout-button';
 import Container from '@/components/layout/container';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { productConfig } from '@/config/product';
 import { websiteConfig } from '@/config/website';
 import { Routes } from '@/lib/routes';
 import { seo } from '@/lib/seo';
+import { getCanonicalUrl } from '@/lib/urls';
 import { cn } from '@/lib/utils';
 import { messages } from '@/messages';
 import { IconCheck, IconMinus } from '@tabler/icons-react';
@@ -20,12 +21,78 @@ const { pricing, features } = productConfig;
 /** Checkout needs both the feature flag and a configured payment provider. */
 const onSale = features.paidPlans && !!websiteConfig.payment?.enable;
 
+/**
+ * Structured data for the pricing page. Offers mirror what the page shows:
+ * a plan that is not on sale is marked as such rather than as purchasable.
+ */
+function pricingJsonLd() {
+  const url = getCanonicalUrl('/pricing');
+  const availability = (available: boolean) =>
+    available ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder';
+  const offer = (
+    plan: (typeof m.plans)[keyof typeof m.plans],
+    price: number,
+    available: boolean
+  ) => ({
+    '@type': 'Offer',
+    name: plan.name,
+    description: plan.description,
+    price: price.toString(),
+    priceCurrency: 'USD',
+    availability: availability(available),
+    url,
+  });
+
+  const webPage = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: m.title,
+    description: m.description,
+    url,
+    dateModified: productConfig.pricingUpdated,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: websiteConfig.metadata?.name,
+      url: getCanonicalUrl('/'),
+    },
+    mainEntity: {
+      '@type': 'WebApplication',
+      name: websiteConfig.metadata?.name,
+      url: getCanonicalUrl('/'),
+      applicationCategory: 'MultimediaApplication',
+      operatingSystem: 'Any browser',
+      offers: [
+        offer(m.plans.free, 0, true),
+        offer(m.plans.pass, pricing.projectPass.amountUsd, onSale),
+        offer(m.plans.pro, pricing.pro.amountUsd, onSale),
+      ],
+    },
+  };
+
+  const faq = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ_ITEMS.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  };
+
+  return [webPage, faq];
+}
+
 export const Route = createFileRoute('/(pages)/pricing')({
-  head: () =>
-    seo('/pricing', {
+  head: () => ({
+    ...seo('/pricing', {
       title: `Pricing — free audio to MIDI, paid batch workflow | ${websiteConfig.metadata?.name}`,
       description: m.description,
     }),
+    scripts: pricingJsonLd().map((data) => ({
+      type: 'application/ld+json',
+      children: JSON.stringify(data),
+    })),
+  }),
   component: PricingPage,
 });
 

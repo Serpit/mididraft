@@ -20,6 +20,7 @@ import { websiteConfig } from '@/config/website';
 import appCss from '../styles.css?url';
 import { DefaultCatchBoundary } from '@/components/layout/default-catch-boundary';
 import { Routes } from '@/lib/routes';
+import { getBaseUrl, getImageUrl } from '@/lib/urls';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { lazy } from 'react';
 
@@ -30,6 +31,32 @@ const DevTools = import.meta.env.DEV
 /**
  * https://github.com/backpine/tanstack-start-on-cloudflare/blob/main/src/routes/__root.tsx
  */
+/**
+ * Site-wide entity markup: who the site is, on every page. No `sameAs` until
+ * real social accounts exist.
+ */
+function siteJsonLd() {
+  const name = websiteConfig.metadata?.name ?? '';
+  const url = getBaseUrl().replace(/\/$/, '');
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name,
+      url,
+      description: websiteConfig.metadata?.description,
+      inLanguage: 'en',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name,
+      url,
+      logo: getImageUrl('/logo.png'),
+    },
+  ];
+}
+
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
@@ -60,6 +87,10 @@ export const Route = createRootRouteWithContext<{
         content: '#fdfcfc',
       },
     ],
+    scripts: siteJsonLd().map((data) => ({
+      type: 'application/ld+json',
+      children: JSON.stringify(data),
+    })),
     links: [
       {
         rel: 'stylesheet',
