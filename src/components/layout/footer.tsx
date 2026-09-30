@@ -1,3 +1,4 @@
+import { FEATURED_ON } from '@/config/featured-on';
 import { getFooterLinks } from '@/config/footer-config';
 import { getSocialLinks } from '@/config/social-config';
 import { isLinkActive } from '@/lib/urls';
@@ -98,6 +99,23 @@ export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
             &copy; {new Date().getFullYear()} {websiteConfig.metadata?.name}.{' '}
             {messages.footer.rightsReserved}
           </span>
+          <p className="text-muted-foreground text-sm">
+            {messages.footer.featuredOn}{' '}
+            {FEATURED_ON.map((site, index) => (
+              <span key={site.href}>
+                {index > 0 && ' · '}
+                <a
+                  href={site.href}
+                  title={site.name}
+                  target="_blank"
+                  rel="noopener"
+                  className="transition-colors hover:text-foreground"
+                >
+                  {site.name}
+                </a>
+              </span>
+            ))}
+          </p>
           <BuiltWithButton />
         </Container>
       </div>

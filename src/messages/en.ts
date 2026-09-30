@@ -153,6 +153,7 @@ export const messages = {
     tagline:
       'Turn audio ideas into editable MIDI drafts, then clean and export them for your DAW.',
     rightsReserved: 'All Rights Reserved',
+    featuredOn: 'Featured on',
   },
 
   auth: {

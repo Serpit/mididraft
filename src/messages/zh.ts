@@ -108,6 +108,7 @@ export const messages = {
   footer: {
     tagline: '用 TanStack 更快交付，用 Cloudflare 更省成本',
     rightsReserved: '版权所有',
+    featuredOn: '收录于',
   },
 
   auth: {
