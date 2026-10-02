@@ -316,6 +316,7 @@ function PaidPlanAction({ planId }: { planId: string }) {
       planId={planId}
       priceId={priceId}
       launchOffer={discounted}
+      offerSurface="pricing"
       className="w-full"
     >
       {discounted

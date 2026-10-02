@@ -1,4 +1,5 @@
 import { track } from '@/lib/analytics/events';
+import type { LaunchOfferCheckoutSurface } from '@/lib/analytics/events';
 import { createCheckoutSession } from '@/api/payment';
 import { Button } from '@/components/ui/button';
 import { websiteConfig } from '@/config/website';
@@ -15,6 +16,8 @@ interface CheckoutButtonProps {
   priceId: string;
   metadata?: Record<string, string>;
   launchOffer?: boolean;
+  /** Where a discounted checkout started. For analytics only. */
+  offerSurface?: LaunchOfferCheckoutSurface;
   variant?:
     | 'default'
     | 'outline'
@@ -33,6 +36,8 @@ interface StartCheckoutOptions {
   priceId: string;
   metadata?: Record<string, string>;
   launchOffer?: boolean;
+  /** Where a discounted checkout started. For analytics only. */
+  offerSurface?: LaunchOfferCheckoutSurface;
   /** Where the provider sends the buyer back to. Defaults to billing. */
   successUrl?: string;
   cancelUrl?: string;
@@ -48,11 +53,14 @@ export async function startCheckout({
   priceId,
   metadata,
   launchOffer,
+  offerSurface,
   successUrl,
   cancelUrl,
 }: StartCheckoutOptions): Promise<boolean> {
   try {
-    if (launchOffer) track('launch_offer_checkout');
+    if (launchOffer) {
+      track('launch_offer_checkout', { surface: offerSurface ?? 'pricing' });
+    }
 
     // merge metadata with existing metadata
     const mergedMetadata = metadata ? { ...metadata } : {};
@@ -127,6 +135,7 @@ export function CheckoutButton({
   priceId,
   metadata,
   launchOffer,
+  offerSurface,
   variant = 'default',
   size = 'default',
   className,
@@ -136,7 +145,13 @@ export function CheckoutButton({
 
   const handleClick = async () => {
     setIsLoading(true);
-    await startCheckout({ planId, priceId, metadata, launchOffer });
+    await startCheckout({
+      planId,
+      priceId,
+      metadata,
+      launchOffer,
+      offerSurface,
+    });
     setIsLoading(false);
   };
 

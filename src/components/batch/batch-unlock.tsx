@@ -78,6 +78,7 @@ export function BatchUnlock({
       planId: 'pass',
       priceId,
       launchOffer: offer || undefined,
+      offerSurface: 'batch',
       successUrl: origin + batchReturnPath('paid'),
       cancelUrl: origin + batchReturnPath('cancel'),
     });

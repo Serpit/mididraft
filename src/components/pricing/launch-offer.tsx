@@ -22,6 +22,7 @@ import { websiteConfig } from '@/config/website';
 import { track } from '@/lib/analytics/events';
 import { fireConfetti } from '@/lib/confetti';
 import { offerClock, offerSecondsLeft } from '@/lib/launch-offer';
+import type { LaunchOfferPopupFrom } from '@/lib/analytics/events';
 import { Routes } from '@/lib/routes';
 
 const campaign = productConfig.launchOffer;
@@ -69,6 +70,8 @@ export function LaunchOfferProvider({
   const [open, setOpen] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const seen = useRef(false);
+  /** What opened the popup that is showing now. */
+  const openedFrom = useRef<LaunchOfferPopupFrom>('auto');
   useEffect(() => {
     const timer = window.setTimeout(() => setReady(true), 2000);
     return () => window.clearTimeout(timer);
@@ -114,8 +117,9 @@ export function LaunchOfferProvider({
     const today = new Date().toLocaleDateString('en-CA');
     if (!alreadyShown(today)) {
       markShown(today);
+      openedFrom.current = 'auto';
       setOpen(true);
-      track('launch_offer_view', { surface: 'popup' });
+      track('launch_offer_view', { surface: 'popup', from: 'auto' });
     }
   }, [active]);
   const context = useMemo(
@@ -124,8 +128,9 @@ export function LaunchOfferProvider({
       settled: !enabled || query.isFetched,
       seconds,
       showOffer: () => {
+        openedFrom.current = 'banner';
         setOpen(true);
-        track('launch_offer_view', { surface: 'popup' });
+        track('launch_offer_view', { surface: 'popup', from: 'banner' });
       },
     }),
     [active, query.isFetched, seconds]
@@ -137,9 +142,13 @@ export function LaunchOfferProvider({
     const timer = window.setTimeout(() => fireConfetti(), 220);
     return () => window.clearTimeout(timer);
   }, [celebrate]);
+  const dismiss = (method: 'continue_free' | 'close') => {
+    setOpen(false);
+    track('launch_offer_dismiss', { method, from: openedFrom.current });
+  };
   const changeOpen = (next: boolean) => {
-    setOpen(next);
-    if (!next) track('launch_offer_dismiss');
+    if (next) setOpen(true);
+    else dismiss('close');
   };
   return (
     <OfferContext.Provider value={context}>
@@ -225,7 +234,7 @@ export function LaunchOfferProvider({
           <button
             type="button"
             className="launch-offer-skip"
-            onClick={() => changeOpen(false)}
+            onClick={() => dismiss('continue_free')}
           >
             Continue free
           </button>
@@ -263,6 +272,7 @@ function LaunchOfferAction({ active }: { active: boolean }) {
       planId="pass"
       priceId={productConfig.waffo.products.projectPass}
       launchOffer
+      offerSurface="popup"
       className="launch-offer-cta"
     >
       {label}

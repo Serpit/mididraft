@@ -46,15 +46,26 @@ export type BatchEntrySurface =
   | 'dropzone_hint'
   | 'home_capabilities';
 
+export type LaunchOfferPopupFrom = 'auto' | 'banner';
+export type LaunchOfferCheckoutSurface = 'popup' | 'batch' | 'pricing';
+
 /** Why a saved batch came back; `return` means a later visit. */
 export type BatchResumeReason = 'login' | 'paid' | 'cancel' | 'return';
 
 /** Every event the site sends, and the parameters each one carries. */
 export interface AnalyticsEvents {
-  launch_offer_view: { surface: 'banner' | 'popup' };
-  launch_offer_dismiss: Record<string, never>;
+  /** `from` is set for the popup: opened by itself, or from the banner. */
+  launch_offer_view: {
+    surface: 'banner' | 'popup';
+    from?: LaunchOfferPopupFrom;
+  };
+  /** `continue_free` is the explicit no; `close` is ×, Esc or backdrop. */
+  launch_offer_dismiss: {
+    method: 'continue_free' | 'close';
+    from: LaunchOfferPopupFrom;
+  };
   launch_offer_click: { surface: 'popup' | 'pricing' };
-  launch_offer_checkout: Record<string, never>;
+  launch_offer_checkout: { surface: LaunchOfferCheckoutSurface };
   /** A file decoded and passed the length check. */
   file_loaded: {
     input_source: InputSource;
