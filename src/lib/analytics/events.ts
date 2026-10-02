@@ -42,7 +42,9 @@ export type BatchEntrySurface =
   | 'multi_drop'
   | 'waiting_banner'
   | 'post_download'
-  | 'dropzone_hint';
+  | 'second_file'
+  | 'dropzone_hint'
+  | 'home_capabilities';
 
 /** Why a saved batch came back; `return` means a later visit. */
 export type BatchResumeReason = 'login' | 'paid' | 'cancel' | 'return';

@@ -1,4 +1,5 @@
 import Container from '@/components/layout/container';
+import { productConfig } from '@/config/product';
 import {
   Accordion,
   AccordionContent,
@@ -29,6 +30,11 @@ export const FAQ_ITEMS = [
     question: 'What does the free version actually include?',
     answer:
       'The whole conversion: load a file, pick a section, transcribe it, compare it against the original, adjust the detection and cleanup settings, and download a standard .mid file with the correct tempo. No account, no email, no watermark on the output.',
+  },
+  {
+    id: 'batch',
+    question: 'Can I convert several audio files to MIDI at once?',
+    answer: `Yes, with the batch converter. Select up to ${productConfig.batchLimits.pass.maxFiles} files of up to ${productConfig.batchLimits.pass.maxDurationMinutes} minutes each, set the detection and cleanup once, and download every .mid in a single ZIP. It still runs in your browser, so nothing is uploaded. Batch is part of the Project Pass: $${productConfig.pricing.projectPass.amountUsd} for ${productConfig.pricing.projectPass.days} days, one payment, no subscription. Converting one file at a time stays free.`,
   },
   {
     id: 'polyphonic',

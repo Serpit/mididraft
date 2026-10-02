@@ -88,7 +88,9 @@ export function DropZone({ onFile, onFiles, disabled }: DropZoneProps) {
       <div className="melody-action">
         <p className="st-eyebrow mb-3">Make room for your next melody</p>
         <h2 className="text-xl font-medium tracking-tight sm:text-2xl">
-          Drop an audio file, or choose one
+          {onFiles
+            ? 'Drop one audio file, or several at once'
+            : 'Drop an audio file, or choose one'}
         </h2>
         <p className="mx-auto mt-2 max-w-md leading-relaxed text-muted-foreground">
           Works best on a clear single instrument or one melody line. Pick a
@@ -102,7 +104,7 @@ export function DropZone({ onFile, onFiles, disabled }: DropZoneProps) {
           disabled={disabled}
           onClick={() => inputRef.current?.click()}
         >
-          Choose an audio file
+          {onFiles ? 'Choose audio files' : 'Choose an audio file'}
         </Button>
 
         <ul className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
@@ -128,10 +130,10 @@ export function DropZone({ onFile, onFiles, disabled }: DropZoneProps) {
 
         {onFiles && (
           <p className="mt-2 text-sm text-muted-foreground">
-            A folder of clips? Drop them all at once, or{' '}
+            A folder of clips? Select them all at once, or{' '}
             <Link
               to={Routes.BatchAudioToMidi}
-              className="underline underline-offset-4 hover:text-foreground"
+              className="font-medium text-foreground underline underline-offset-4"
               onClick={() =>
                 handOffToBatch({ entry: 'dropzone_hint', files: [] })
               }

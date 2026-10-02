@@ -5,8 +5,13 @@ import { PresetControls } from '@/components/converter/preset-controls';
 import { SettingsPanel } from '@/components/converter/settings-panel';
 import { Transport } from '@/components/converter/transport';
 import { Waveform } from '@/components/converter/waveform';
+import {
+  LAUNCH_PRICE,
+  useLaunchOffer,
+} from '@/components/pricing/launch-offer';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { productConfig } from '@/config/product';
 import { useCurrentPlan } from '@/hooks/use-payment';
 import {
   ACCEPTED_EXTENSIONS,
@@ -48,6 +53,7 @@ import {
   IconChevronDown,
   IconDownload,
   IconRefresh,
+  IconStack2,
   IconX,
 } from '@tabler/icons-react';
 import { Link, useNavigate } from '@tanstack/react-router';
@@ -89,7 +95,10 @@ function rejectReason(caught: unknown): RejectReason {
 
 const BATCH_NUDGE_KEY = 'mididraft:batch-nudge-shown';
 
-/** The post-download batch suggestion appears once per browser session. */
+/**
+ * The batch suggestion appears once per browser session, on whichever comes
+ * first: a download, or a second file loaded by hand.
+ */
 function claimBatchNudge(): boolean {
   try {
     if (sessionStorage.getItem(BATCH_NUDGE_KEY)) return false;
@@ -116,7 +125,9 @@ export function Converter({ className }: { className?: string }) {
   const [stage, setStage] = useState<Stage>('idle');
   /** Every file from a multi-file drop, kept for the batch converter. */
   const [tray, setTray] = useState<File[]>([]);
-  const [batchNudge, setBatchNudge] = useState(false);
+  /** Where the batch suggestion was raised, or null while it is hidden. */
+  const [batchNudge, setBatchNudge] = useState<BatchEntrySurface | null>(null);
+  const { active: offer } = useLaunchOffer();
   const [audio, setAudio] = useState<LoadedAudio | null>(null);
   const [selection, setSelection] = useState({ start: 0, end: 0 });
   const [progress, setProgress] = useState(0);
@@ -245,7 +256,7 @@ export function Converter({ className }: { className?: string }) {
     setError(null);
     setProgress(0);
     setAdjustOpen(false);
-    setBatchNudge(false);
+    setBatchNudge(null);
   }, []);
 
   const runAnalysis = useCallback(
@@ -366,6 +377,10 @@ export function Converter({ className }: { className?: string }) {
       });
       if (filesLoadedRef.current === 2) {
         track('second_file_loaded', { input_source: origin.source });
+        // A second file by hand is the clearest sign of a pile of clips.
+        if (origin.source === 'upload' && claimBatchNudge()) {
+          setBatchNudge('second_file');
+        }
       }
 
       const end = Math.min(buffer.duration, DEFAULT_SEGMENT_SECONDS);
@@ -548,7 +563,7 @@ export function Converter({ className }: { className?: string }) {
       bpm_edited: bpmTouched ? 'yes' : 'no',
       file_index: filesLoadedRef.current,
     });
-    if (tray.length <= 1 && claimBatchNudge()) setBatchNudge(true);
+    if (tray.length <= 1 && claimBatchNudge()) setBatchNudge('post_download');
   }, [audio, bpm, bpmTouched, cleanupActive, notes, tray.length]);
 
   const busy = stage === 'decoding' || stage === 'analyzing';
@@ -827,16 +842,32 @@ export function Converter({ className }: { className?: string }) {
               </div>
 
               {batchNudge && (
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline px-5 py-3">
-                  <p className="text-sm text-muted-foreground">
-                    More clips like this one? Run a whole folder through these
-                    same settings.
-                  </p>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline bg-surface-strong/40 px-5 py-4">
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-2 text-sm font-medium">
+                      <IconStack2 className="size-4 shrink-0" />
+                      More clips like this one?
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Convert up to {productConfig.batchLimits.pass.maxFiles} at
+                      once with these settings, and download one ZIP.
+                      {!hasBatchAccess && (
+                        <>
+                          {' '}
+                          Project Pass,{' '}
+                          {offer
+                            ? LAUNCH_PRICE
+                            : `$${productConfig.pricing.projectPass.amountUsd}`}{' '}
+                          for {productConfig.pricing.projectPass.days} days.
+                        </>
+                      )}
+                    </p>
+                  </div>
                   <Button
                     type="button"
-                    variant="ghost"
-                    className="h-10 rounded-full"
-                    onClick={() => goToBatch('post_download', [], true)}
+                    variant="outline"
+                    className="h-10 rounded-full bg-surface"
+                    onClick={() => goToBatch(batchNudge, [], true)}
                   >
                     Batch convert
                     <IconArrowRight className="ml-1.5 size-4" />

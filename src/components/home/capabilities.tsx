@@ -1,6 +1,8 @@
 import Container from '@/components/layout/container';
-import { productConfig } from '@/config/product';
+import { isLaunched, productConfig } from '@/config/product';
+import { handOffToBatch } from '@/lib/midi/batch-handoff';
 import { Routes } from '@/lib/routes';
+import { IconArrowRight, IconStack2 } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 
 /**
@@ -46,7 +48,7 @@ const PRIVACY = [
 ];
 
 export function CapabilitiesSection() {
-  const { limits } = productConfig;
+  const { limits, batchLimits, pricing } = productConfig;
 
   return (
     <section id="formats" className="border-b border-hairline py-16 sm:py-20">
@@ -76,6 +78,35 @@ export function CapabilitiesSection() {
             </div>
           ))}
         </dl>
+
+        {isLaunched('batch') && (
+          <div className="st-card mx-auto mt-4 flex max-w-3xl flex-wrap items-center justify-between gap-4 p-5">
+            <div className="min-w-0 flex-1 basis-80">
+              <p className="flex items-center gap-2 font-medium">
+                <IconStack2 className="size-4 shrink-0" />A pile of clips?
+                Convert them in one run
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                Batch takes up to {batchLimits.pass.maxFiles} files of up to{' '}
+                {batchLimits.pass.maxDurationMinutes} minutes each, runs them
+                through one set of settings, and hands back every .mid in a
+                single ZIP. Still converted in your browser. Batch is part of
+                the Project Pass, ${pricing.projectPass.amountUsd} for{' '}
+                {pricing.projectPass.days} days; single files stay free.
+              </p>
+            </div>
+            <Link
+              to={Routes.BatchAudioToMidi}
+              className="inline-flex items-center text-sm font-medium underline underline-offset-4"
+              onClick={() =>
+                handOffToBatch({ entry: 'home_capabilities', files: [] })
+              }
+            >
+              Open the batch converter
+              <IconArrowRight className="ml-1 size-4" />
+            </Link>
+          </div>
+        )}
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
