@@ -24,7 +24,13 @@ Scope decisions live in `src/config/product.ts`, taken from the 90-day plan
 - `productConfig.features` gates unfinished features. A page whose feature is off
   renders `NotLaunched`, is `noindex`, and is absent from the nav and sitemap.
   **Do not publish a page for a feature that does not work.**
-- Paid plans are priced but not on sale; `features.paidPlans` is false.
+- Paid plans are on sale through Waffo (`features.paidPlans` is true). Batch
+  conversion is the paid feature: Project Pass ($7 for 7 days, one payment)
+  or Pro ($12/month). Single-file conversion stays free and needs no account,
+  so sign-up only happens at the batch paywall. A first-purchase launch offer
+  ($4.90, 24 hours per visitor) is controlled by `productConfig.launchOffer`.
+- The batch paywall is enforced client-side only (conversion runs in the
+  browser); that is accepted, since one-at-a-time conversion is free anyway.
 
 ### Converter architecture (`src/lib/midi/`)
 
