@@ -52,6 +52,9 @@ import { Route as ApiWebhooksCreemRouteImport } from './routes/api/webhooks/cree
 import { Route as ApiStorageFileRouteImport } from './routes/api/storage/file'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as pagesGuidesImproveAudioToMidiResultsRouteImport } from './routes/(pages)/guides/improve-audio-to-midi-results'
+import { Route as pagesGuidesFixAudioToMidiTempoRouteImport } from './routes/(pages)/guides/fix-audio-to-midi-tempo'
+import { Route as pagesGuidesExtractMelodyFromSongToMidiRouteImport } from './routes/(pages)/guides/extract-melody-from-song-to-midi'
+import { Route as pagesGuidesAudioToMidiTooManyNotesRouteImport } from './routes/(pages)/guides/audio-to-midi-too-many-notes'
 import { Route as pagesGuidesAudioToMidiReaperRouteImport } from './routes/(pages)/guides/audio-to-midi-reaper'
 import { Route as pagesGuidesAudioToMidiLogicProRouteImport } from './routes/(pages)/guides/audio-to-midi-logic-pro'
 import { Route as pagesGuidesAudioToMidiGaragebandRouteImport } from './routes/(pages)/guides/audio-to-midi-garageband'
@@ -274,6 +277,24 @@ const pagesGuidesImproveAudioToMidiResultsRoute =
     path: '/guides/improve-audio-to-midi-results',
     getParentRoute: () => rootRouteImport,
   } as any)
+const pagesGuidesFixAudioToMidiTempoRoute =
+  pagesGuidesFixAudioToMidiTempoRouteImport.update({
+    id: '/(pages)/guides/fix-audio-to-midi-tempo',
+    path: '/guides/fix-audio-to-midi-tempo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const pagesGuidesExtractMelodyFromSongToMidiRoute =
+  pagesGuidesExtractMelodyFromSongToMidiRouteImport.update({
+    id: '/(pages)/guides/extract-melody-from-song-to-midi',
+    path: '/guides/extract-melody-from-song-to-midi',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const pagesGuidesAudioToMidiTooManyNotesRoute =
+  pagesGuidesAudioToMidiTooManyNotesRouteImport.update({
+    id: '/(pages)/guides/audio-to-midi-too-many-notes',
+    path: '/guides/audio-to-midi-too-many-notes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const pagesGuidesAudioToMidiReaperRoute =
   pagesGuidesAudioToMidiReaperRouteImport.update({
     id: '/(pages)/guides/audio-to-midi-reaper',
@@ -347,6 +368,9 @@ export interface FileRoutesByFullPath {
   '/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
   '/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
   '/guides/audio-to-midi-reaper': typeof pagesGuidesAudioToMidiReaperRoute
+  '/guides/audio-to-midi-too-many-notes': typeof pagesGuidesAudioToMidiTooManyNotesRoute
+  '/guides/extract-melody-from-song-to-midi': typeof pagesGuidesExtractMelodyFromSongToMidiRoute
+  '/guides/fix-audio-to-midi-tempo': typeof pagesGuidesFixAudioToMidiTempoRoute
   '/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
@@ -394,6 +418,9 @@ export interface FileRoutesByTo {
   '/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
   '/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
   '/guides/audio-to-midi-reaper': typeof pagesGuidesAudioToMidiReaperRoute
+  '/guides/audio-to-midi-too-many-notes': typeof pagesGuidesAudioToMidiTooManyNotesRoute
+  '/guides/extract-melody-from-song-to-midi': typeof pagesGuidesExtractMelodyFromSongToMidiRoute
+  '/guides/fix-audio-to-midi-tempo': typeof pagesGuidesFixAudioToMidiTempoRoute
   '/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
@@ -445,6 +472,9 @@ export interface FileRoutesById {
   '/(pages)/guides/audio-to-midi-garageband': typeof pagesGuidesAudioToMidiGaragebandRoute
   '/(pages)/guides/audio-to-midi-logic-pro': typeof pagesGuidesAudioToMidiLogicProRoute
   '/(pages)/guides/audio-to-midi-reaper': typeof pagesGuidesAudioToMidiReaperRoute
+  '/(pages)/guides/audio-to-midi-too-many-notes': typeof pagesGuidesAudioToMidiTooManyNotesRoute
+  '/(pages)/guides/extract-melody-from-song-to-midi': typeof pagesGuidesExtractMelodyFromSongToMidiRoute
+  '/(pages)/guides/fix-audio-to-midi-tempo': typeof pagesGuidesFixAudioToMidiTempoRoute
   '/(pages)/guides/improve-audio-to-midi-results': typeof pagesGuidesImproveAudioToMidiResultsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/storage/file': typeof ApiStorageFileRoute
@@ -497,6 +527,9 @@ export interface FileRouteTypes {
     | '/guides/audio-to-midi-garageband'
     | '/guides/audio-to-midi-logic-pro'
     | '/guides/audio-to-midi-reaper'
+    | '/guides/audio-to-midi-too-many-notes'
+    | '/guides/extract-melody-from-song-to-midi'
+    | '/guides/fix-audio-to-midi-tempo'
     | '/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
@@ -544,6 +577,9 @@ export interface FileRouteTypes {
     | '/guides/audio-to-midi-garageband'
     | '/guides/audio-to-midi-logic-pro'
     | '/guides/audio-to-midi-reaper'
+    | '/guides/audio-to-midi-too-many-notes'
+    | '/guides/extract-melody-from-song-to-midi'
+    | '/guides/fix-audio-to-midi-tempo'
     | '/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
@@ -594,6 +630,9 @@ export interface FileRouteTypes {
     | '/(pages)/guides/audio-to-midi-garageband'
     | '/(pages)/guides/audio-to-midi-logic-pro'
     | '/(pages)/guides/audio-to-midi-reaper'
+    | '/(pages)/guides/audio-to-midi-too-many-notes'
+    | '/(pages)/guides/extract-melody-from-song-to-midi'
+    | '/(pages)/guides/fix-audio-to-midi-tempo'
     | '/(pages)/guides/improve-audio-to-midi-results'
     | '/api/auth/$'
     | '/api/storage/file'
@@ -629,6 +668,9 @@ export interface RootRouteChildren {
   pagesGuidesAudioToMidiGaragebandRoute: typeof pagesGuidesAudioToMidiGaragebandRoute
   pagesGuidesAudioToMidiLogicProRoute: typeof pagesGuidesAudioToMidiLogicProRoute
   pagesGuidesAudioToMidiReaperRoute: typeof pagesGuidesAudioToMidiReaperRoute
+  pagesGuidesAudioToMidiTooManyNotesRoute: typeof pagesGuidesAudioToMidiTooManyNotesRoute
+  pagesGuidesExtractMelodyFromSongToMidiRoute: typeof pagesGuidesExtractMelodyFromSongToMidiRoute
+  pagesGuidesFixAudioToMidiTempoRoute: typeof pagesGuidesFixAudioToMidiTempoRoute
   pagesGuidesImproveAudioToMidiResultsRoute: typeof pagesGuidesImproveAudioToMidiResultsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiStorageFileRoute: typeof ApiStorageFileRoute
@@ -941,6 +983,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof pagesGuidesImproveAudioToMidiResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(pages)/guides/fix-audio-to-midi-tempo': {
+      id: '/(pages)/guides/fix-audio-to-midi-tempo'
+      path: '/guides/fix-audio-to-midi-tempo'
+      fullPath: '/guides/fix-audio-to-midi-tempo'
+      preLoaderRoute: typeof pagesGuidesFixAudioToMidiTempoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(pages)/guides/extract-melody-from-song-to-midi': {
+      id: '/(pages)/guides/extract-melody-from-song-to-midi'
+      path: '/guides/extract-melody-from-song-to-midi'
+      fullPath: '/guides/extract-melody-from-song-to-midi'
+      preLoaderRoute: typeof pagesGuidesExtractMelodyFromSongToMidiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(pages)/guides/audio-to-midi-too-many-notes': {
+      id: '/(pages)/guides/audio-to-midi-too-many-notes'
+      path: '/guides/audio-to-midi-too-many-notes'
+      fullPath: '/guides/audio-to-midi-too-many-notes'
+      preLoaderRoute: typeof pagesGuidesAudioToMidiTooManyNotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(pages)/guides/audio-to-midi-reaper': {
       id: '/(pages)/guides/audio-to-midi-reaper'
       path: '/guides/audio-to-midi-reaper'
@@ -1073,6 +1136,11 @@ const rootRouteChildren: RootRouteChildren = {
   pagesGuidesAudioToMidiGaragebandRoute: pagesGuidesAudioToMidiGaragebandRoute,
   pagesGuidesAudioToMidiLogicProRoute: pagesGuidesAudioToMidiLogicProRoute,
   pagesGuidesAudioToMidiReaperRoute: pagesGuidesAudioToMidiReaperRoute,
+  pagesGuidesAudioToMidiTooManyNotesRoute:
+    pagesGuidesAudioToMidiTooManyNotesRoute,
+  pagesGuidesExtractMelodyFromSongToMidiRoute:
+    pagesGuidesExtractMelodyFromSongToMidiRoute,
+  pagesGuidesFixAudioToMidiTempoRoute: pagesGuidesFixAudioToMidiTempoRoute,
   pagesGuidesImproveAudioToMidiResultsRoute:
     pagesGuidesImproveAudioToMidiResultsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

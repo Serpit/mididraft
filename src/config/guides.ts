@@ -2,6 +2,9 @@ import { Routes } from '@/lib/routes';
 import { messages } from '@/messages';
 import {
   IconAdjustmentsBolt,
+  IconClock,
+  IconFilter,
+  IconMicrophone,
   IconMusic,
   IconPiano,
   IconPlug,
@@ -72,5 +75,26 @@ export const GUIDES: Guide[] = [
     icon: IconSparkles,
     art: 'note8',
     updated: '2026-09-24',
+  },
+  {
+    href: Routes.GuideFixTempo,
+    ...m.fixTempo,
+    icon: IconClock,
+    art: 'note16',
+    updated: '2026-10-04',
+  },
+  {
+    href: Routes.GuideTooManyNotes,
+    ...m.tooManyNotes,
+    icon: IconFilter,
+    art: 'vinyl',
+    updated: '2026-10-04',
+  },
+  {
+    href: Routes.GuideExtractMelody,
+    ...m.extractMelody,
+    icon: IconMicrophone,
+    art: 'mic',
+    updated: '2026-10-04',
   },
 ];

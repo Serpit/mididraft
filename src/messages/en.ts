@@ -62,6 +62,18 @@ export const messages = {
         title: 'Get better results',
         description: 'Which takes convert well, and which never will',
       },
+      fixTempo: {
+        title: 'Fix the wrong tempo',
+        description: 'Half-time, double-time and drifting MIDI after import',
+      },
+      tooManyNotes: {
+        title: 'Too many notes',
+        description: 'Find where the extra notes come from, then remove them',
+      },
+      extractMelody: {
+        title: 'Melody from a song',
+        description: 'Pull a hummable line out of a full mix',
+      },
     },
     about: {
       title: 'About',
