@@ -8,4 +8,8 @@ export const FEATURED_ON = [
   { name: 'MossAI Tools', href: 'https://mossai.org' },
   { name: 'Toolso.AI', href: 'https://toolso.ai' },
   { name: 'TopAIHubs', href: 'https://topaihubs.com' },
+  {
+    name: 'Findly.tools',
+    href: 'https://findly.tools/mididraft?utm_source=mididraft',
+  },
 ] as const;
