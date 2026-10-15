@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Exporting MIDI from a DAW">
+  <rect width="1200" height="630" fill="#1c1917"/>
+  <rect x="110" y="170" width="420" height="250" rx="18" fill="none" stroke="#57534e" stroke-width="4"/>
+  <g fill="#fb923c">
+    <rect x="150" y="350" width="110" height="24" rx="12"/>
+    <rect x="230" y="300" width="140" height="24" rx="12"/>
+    <rect x="330" y="250" width="90" height="24" rx="12"/>
+    <rect x="400" y="320" width="100" height="24" rx="12"/>
+  </g>
+  <path d="M600 295 L700 295 M675 275 L700 295 L675 315" stroke="#a8a29e" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M780 170 h220 l70 70 v180 a18 18 0 0 1 -18 18 h-272 a18 18 0 0 1 -18 -18 v-232 a18 18 0 0 1 18 -18 z" fill="none" stroke="#f97316" stroke-width="5" stroke-linejoin="round"/>
+  <text x="915" y="330" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="56" font-weight="700" fill="#fb923c" text-anchor="middle">.mid</text>
+  <text x="600" y="530" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="46" font-weight="700" fill="#fafaf9" text-anchor="middle">Get a .mid out of your DAW</text>
+</svg>
