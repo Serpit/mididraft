@@ -81,6 +81,8 @@ export interface AnalyticsEvents {
     reason: RejectReason;
     file_ext: string;
   };
+  /** A too-long file was cut to its first minutes instead of rejected. */
+  long_file_trimmed: { input_source: InputSource; file_ext: string };
   /** Sent once per page visit, when a second file is loaded. */
   second_file_loaded: { input_source: InputSource };
   analyze_start: { segment_length: LengthBucket; run_index: number };

@@ -102,11 +102,16 @@ export async function decodeAudioFile(file: File): Promise<AudioBuffer> {
     );
   }
   if (file.size > MAX_FILE_BYTES) {
+    // Most oversized files are WAVs: three minutes of CD-quality WAV is
+    // already about 32 MB, while the same audio as MP3 is about 7 MB.
+    const lossless = /\.(wav|flac)$/i.test(file.name);
     throw new AudioError(
       `${file.name} is ${formatBytes(file.size)}, over the ${formatBytes(
         MAX_FILE_BYTES
       )} limit.`,
-      'Export a shorter section from your DAW and try again.',
+      lossless
+        ? 'Save it as an MP3 (three minutes is about 7 MB), or export only the section you want.'
+        : 'The file is probably longer than the 3 minute limit. Export only the section you want and try again.',
       'too_large'
     );
   }

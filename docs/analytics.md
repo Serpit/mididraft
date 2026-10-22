@@ -37,6 +37,7 @@ Keep that true when adding events.
 |-------|------|------------|
 | `file_loaded` | File decoded and within limits | `input_source`, `file_ext`, `audio_length`, `example_slug`, `file_index` |
 | `file_rejected` | File never reached the model | `input_source`, `reason`, `file_ext` |
+| `long_file_trimmed` | A `too_long` file converted from its first 3 minutes | `input_source`, `file_ext` |
 | `second_file_loaded` | Second file in one page visit (once) | `input_source` |
 | `analyze_start` | Model run begins | `segment_length`, `run_index` |
 | `analyze_complete` | Model run finished | `segment_length`, `duration_ms`, `empty_result`, `run_index` |

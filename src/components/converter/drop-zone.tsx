@@ -121,6 +121,12 @@ export function DropZone({ onFile, onFiles, disabled }: DropZoneProps) {
             </li>
           ))}
         </ul>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+          A full song is fine: you can convert its first{' '}
+          {MAX_DURATION_SECONDS / 60} minutes. For a later section, or a WAV
+          over {formatBytes(MAX_FILE_BYTES)}, export just that part, or save it
+          as an MP3.
+        </p>
 
         <p className="mt-5 inline-flex items-center gap-2 text-sm text-muted-foreground">
           <IconLock className="size-4 shrink-0" />

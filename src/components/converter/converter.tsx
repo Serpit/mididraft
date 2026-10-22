@@ -132,7 +132,14 @@ export function Converter({ className }: { className?: string }) {
   const [selection, setSelection] = useState({ start: 0, end: 0 });
   const [progress, setProgress] = useState(0);
   const [progressLabel, setProgressLabel] = useState('');
-  const [error, setError] = useState<{ message: string; hint?: string } | null>(
+  const [error, setError] = useState<{
+    message: string;
+    hint?: string;
+    /** Offer to convert the first minutes of a file that is too long. */
+    canTrim?: boolean;
+  } | null>(null);
+  /** The decoded too-long file, kept so it can be trimmed without re-reading. */
+  const longFileRef = useRef<{ buffer: AudioBuffer; name: string } | null>(
     null
   );
 
@@ -254,6 +261,7 @@ export function Converter({ className }: { className?: string }) {
     setBpmTouched(false);
     setLooping(false);
     setError(null);
+    longFileRef.current = null;
     setProgress(0);
     setAdjustOpen(false);
     setBatchNudge(null);
@@ -354,12 +362,14 @@ export function Converter({ className }: { className?: string }) {
           reason: 'too_long',
           file_ext: fileExtension(name),
         });
+        longFileRef.current = { buffer, name };
         setStage('error');
         setError({
           message: `${name} is ${formatSeconds(buffer.duration)} long, over the ${
             MAX_DURATION_SECONDS / 60
           } minute limit.`,
-          hint: 'Export a shorter section from your DAW and try again.',
+          hint: 'Convert its first 3 minutes now, or export only the section you want (a verse, the hook, a solo) and choose that file instead.',
+          canTrim: true,
         });
         return;
       }
@@ -424,6 +434,29 @@ export function Converter({ className }: { className?: string }) {
     },
     [loadBuffer, resetAll]
   );
+
+  const handleTrimLong = useCallback(async () => {
+    const long = longFileRef.current;
+    if (!long) return;
+    longFileRef.current = null;
+    track('long_file_trimmed', {
+      input_source: originRef.current.source,
+      file_ext: fileExtension(long.name),
+    });
+    setError(null);
+    setStage('decoding');
+    setProgressLabel('Trimming to the first 3 minutes');
+    try {
+      const trimmed = await sliceBuffer(long.buffer, 0, MAX_DURATION_SECONDS);
+      await loadBuffer(trimmed, long.name);
+    } catch {
+      setStage('error');
+      setError({
+        message: `Could not trim ${long.name}.`,
+        hint: 'Export only the section you want from your DAW and choose that file instead.',
+      });
+    }
+  }, [loadBuffer]);
 
   const handleFiles = useCallback(
     (files: File[]) => {
@@ -587,6 +620,15 @@ export function Converter({ className }: { className?: string }) {
               <p className="font-medium">{error.message}</p>
               {error.hint && (
                 <p className="mt-1 text-muted-foreground">{error.hint}</p>
+              )}
+              {error.canTrim && (
+                <Button
+                  type="button"
+                  className="mt-4 h-10 rounded-full"
+                  onClick={() => void handleTrimLong()}
+                >
+                  Convert the first {MAX_DURATION_SECONDS / 60} minutes
+                </Button>
               )}
             </div>
           </div>
