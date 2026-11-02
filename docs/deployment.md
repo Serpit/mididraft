@@ -11,7 +11,7 @@ Cloudflare builds and deploys changes pushed to `main` automatically.
 Build command:
 
 ```sh
-NODE_OPTIONS=--max-old-space-size=4096 VITE_BASE_URL=https://mididraft.com VITE_PAYMENT_PROVIDER=waffo VITE_GOOGLE_ANALYTICS_ID=G-6C8T3HFK3N pnpm build
+NODE_OPTIONS=--max-old-space-size=4096 VITE_BASE_URL=https://mididraft.com VITE_PAYMENT_PROVIDER=waffo VITE_GOOGLE_ANALYTICS_ID=G-6C8T3HFK3N VITE_CLARITY_PROJECT_ID=z7b4euw22w pnpm build
 ```
 
 Deploy command:
