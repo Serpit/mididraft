@@ -14,6 +14,7 @@ export const messages = {
     features: 'Features',
     converter: 'Converter',
     examples: 'Examples',
+    wavToMidi: 'WAV to MIDI converter',
     guidesLabel: 'Guides',
     allGuides: {
       title: 'All guides',

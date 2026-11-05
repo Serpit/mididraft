@@ -10,6 +10,7 @@ export const Routes = {
   // Marketing routes
   Pricing: '/pricing',
   Examples: '/examples',
+  WavToMidi: '/wav-to-midi',
   BatchAudioToMidi: '/batch-audio-to-midi',
   MidiCleanup: '/midi-cleanup',
   Guides: '/guides',

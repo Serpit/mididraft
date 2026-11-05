@@ -36,6 +36,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AuthErrorRouteImport } from './routes/auth/error'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as pagesWavToMidiRouteImport } from './routes/(pages)/wav-to-midi'
 import { Route as pagesPricingRouteImport } from './routes/(pages)/pricing'
 import { Route as pagesMidiCleanupRouteImport } from './routes/(pages)/midi-cleanup'
 import { Route as pagesExamplesRouteImport } from './routes/(pages)/examples'
@@ -196,6 +197,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
+const pagesWavToMidiRoute = pagesWavToMidiRouteImport.update({
+  id: '/(pages)/wav-to-midi',
+  path: '/wav-to-midi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const pagesPricingRoute = pagesPricingRouteImport.update({
   id: '/(pages)/pricing',
   path: '/pricing',
@@ -345,6 +351,7 @@ export interface FileRoutesByFullPath {
   '/examples': typeof pagesExamplesRoute
   '/midi-cleanup': typeof pagesMidiCleanupRoute
   '/pricing': typeof pagesPricingRoute
+  '/wav-to-midi': typeof pagesWavToMidiRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/error': typeof AuthErrorRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/examples': typeof pagesExamplesRoute
   '/midi-cleanup': typeof pagesMidiCleanupRoute
   '/pricing': typeof pagesPricingRoute
+  '/wav-to-midi': typeof pagesWavToMidiRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/error': typeof AuthErrorRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -449,6 +457,7 @@ export interface FileRoutesById {
   '/(pages)/examples': typeof pagesExamplesRoute
   '/(pages)/midi-cleanup': typeof pagesMidiCleanupRoute
   '/(pages)/pricing': typeof pagesPricingRoute
+  '/(pages)/wav-to-midi': typeof pagesWavToMidiRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/error': typeof AuthErrorRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -504,6 +513,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/midi-cleanup'
     | '/pricing'
+    | '/wav-to-midi'
     | '/admin/users'
     | '/auth/error'
     | '/auth/forgot-password'
@@ -554,6 +564,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/midi-cleanup'
     | '/pricing'
+    | '/wav-to-midi'
     | '/admin/users'
     | '/auth/error'
     | '/auth/forgot-password'
@@ -607,6 +618,7 @@ export interface FileRouteTypes {
     | '/(pages)/examples'
     | '/(pages)/midi-cleanup'
     | '/(pages)/pricing'
+    | '/(pages)/wav-to-midi'
     | '/admin/users'
     | '/auth/error'
     | '/auth/forgot-password'
@@ -661,6 +673,7 @@ export interface RootRouteChildren {
   pagesExamplesRoute: typeof pagesExamplesRoute
   pagesMidiCleanupRoute: typeof pagesMidiCleanupRoute
   pagesPricingRoute: typeof pagesPricingRoute
+  pagesWavToMidiRoute: typeof pagesWavToMidiRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   pagesGuidesAudioToMidiAbletonRoute: typeof pagesGuidesAudioToMidiAbletonRoute
@@ -870,6 +883,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/users'
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/(pages)/wav-to-midi': {
+      id: '/(pages)/wav-to-midi'
+      path: '/wav-to-midi'
+      fullPath: '/wav-to-midi'
+      preLoaderRoute: typeof pagesWavToMidiRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(pages)/pricing': {
       id: '/(pages)/pricing'
@@ -1129,6 +1149,7 @@ const rootRouteChildren: RootRouteChildren = {
   pagesExamplesRoute: pagesExamplesRoute,
   pagesMidiCleanupRoute: pagesMidiCleanupRoute,
   pagesPricingRoute: pagesPricingRoute,
+  pagesWavToMidiRoute: pagesWavToMidiRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   pagesGuidesAudioToMidiAbletonRoute: pagesGuidesAudioToMidiAbletonRoute,

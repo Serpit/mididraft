@@ -8,12 +8,17 @@ import { Link } from '@tanstack/react-router';
 /**
  * Formats, limits and privacy in one block.
  *
- * `mp3 to midi`, `wav to midi` and `audio to midi` are covered honestly here
- * rather than split across near-duplicate pages that compete with each other.
+ * `mp3 to midi` and `audio to midi` are covered here. WAV has its own page
+ * (/wav-to-midi) because Bing shows that query landing on the homepage with
+ * nothing more specific to answer it; the WAV card links there.
  * The privacy points sit in the same section because they answer the same
  * question a producer is really asking: what happens to my file.
  */
-const FORMATS = [
+const FORMATS: {
+  heading: string;
+  body: string;
+  link?: { to: typeof Routes.WavToMidi; label: string };
+}[] = [
   {
     heading: 'MP3',
     body: 'What most people have on hand, so it is the format this tool is tuned for. Compression costs you a little: very quiet notes and fast passages survive better in a lossless file.',
@@ -21,6 +26,7 @@ const FORMATS = [
   {
     heading: 'WAV',
     body: 'The best input. An uncompressed bounce straight out of your DAW, one instrument, no master-bus compression or reverb, gives the cleanest note onsets to work with.',
+    link: { to: Routes.WavToMidi, label: 'WAV to MIDI converter' },
   },
   {
     heading: 'FLAC, M4A, AAC, OGG',
@@ -119,6 +125,17 @@ export function CapabilitiesSection() {
                   <dt className="font-medium">{format.heading}</dt>
                   <dd className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {format.body}
+                    {format.link && (
+                      <>
+                        {' '}
+                        <Link
+                          to={format.link.to}
+                          className="text-foreground underline underline-offset-4"
+                        >
+                          {format.link.label}
+                        </Link>
+                      </>
+                    )}
                   </dd>
                 </div>
               ))}

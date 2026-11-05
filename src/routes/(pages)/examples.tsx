@@ -39,6 +39,16 @@ function ExamplesPage() {
           yourself. Nothing on this page is a claimed accuracy figure — open a
           clip in the converter and judge the result with your own ears.
         </p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          All four are WAV files. To run your own bounce, use the{' '}
+          <Link
+            to={Routes.WavToMidi}
+            className="text-foreground underline underline-offset-4"
+          >
+            WAV to MIDI converter
+          </Link>
+          .
+        </p>
       </div>
 
       <div className="mx-auto mt-12 max-w-3xl space-y-8">

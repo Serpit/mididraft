@@ -26,6 +26,11 @@ export const Route = createFileRoute('/llms.txt')({
             'The tool itself. Converts MP3/WAV to an editable MIDI draft in the browser; audio is never uploaded.'
           ),
           link(
+            '/wav-to-midi',
+            'WAV to MIDI converter',
+            'The same converter, with WAV size limits and the usual reasons a bounce converts badly.'
+          ),
+          link(
             '/examples',
             'Examples',
             'Demo clips with the results, including one the model handles badly on purpose.'

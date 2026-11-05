@@ -19,6 +19,10 @@ Scope decisions live in `src/config/product.ts`, taken from the 90-day plan
 (recorded in `docs/plan.md`; read it before changing scope, pricing or phases):
 
 - The **homepage is the tool**. Do not add a `/audio-to-midi` page to compete with it.
+- Format pages are the exception, added one at a time when search data shows the
+  format query landing on the homepage: `/wav-to-midi` (2026-11-05), `/mp3-to-midi`
+  planned next. Each reuses the converter and covers only that format's limits and
+  failures, so it does not duplicate the homepage copy.
 - Instrument keywords (`voice to midi`, `guitar to midi`) are homepage sections, not
   separate pages, until search data shows a genuinely different task.
 - `productConfig.features` gates unfinished features. A page whose feature is off

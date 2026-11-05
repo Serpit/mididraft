@@ -38,6 +38,12 @@ export const Route = createFileRoute('/sitemap.xml')({
             lastmod: '2026-09-24',
           },
           {
+            path: '/wav-to-midi',
+            changefreq: 'monthly',
+            priority: '0.9',
+            lastmod: '2026-11-05',
+          },
+          {
             path: '/examples',
             changefreq: 'monthly',
             priority: '0.8',

@@ -98,7 +98,7 @@ function loadExample(example: Example) {
   );
 }
 
-function ExamplePlayer({ example }: { example: Example }) {
+export function ExamplePlayer({ example }: { example: Example }) {
   return (
     <div className="flex flex-col">
       <p className="st-eyebrow flex items-center gap-2">

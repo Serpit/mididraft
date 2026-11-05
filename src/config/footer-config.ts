@@ -15,6 +15,7 @@ export function getFooterLinks(): MenuItemConfig[] {
   const productItems: MenuItemConfig[] = [
     { title: m.converter, href: Routes.Root, external: false },
     { title: m.examples, href: Routes.Examples, external: false },
+    { title: m.wavToMidi, href: Routes.WavToMidi, external: false },
   ];
   if (productConfig.features.batch) {
     productItems.push({
